@@ -1,0 +1,21 @@
+{
+  "name": "edutech-root",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm run cleanup && concurrently --kill-others-on-fail \"npm run server:dev\" \"npm run client:dev\"",
+    "start": "npm run server:prod",
+    "server:dev": "cd server && npm run dev",
+    "server:prod": "cd server && npm start",
+    "client:dev": "cd client && npm run dev",
+    "client:build": "cd client && npm run build",
+    "cleanup": "powershell -Command \"$conns = Get-NetTCPConnection -LocalPort 5000, 5173 -ErrorAction SilentlyContinue; if ($conns) { Stop-Process -Id $conns.OwningProcess -Force -ErrorAction SilentlyContinue }\"",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "prisma:generate": "cd server && npx prisma generate",
+    "prisma:push": "cd server && npx prisma db push",
+    "seed": "cd server && npm run seed",
+    "lint": "cd client && npm run lint && cd ../server && echo 'Linting server...'"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

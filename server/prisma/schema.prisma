@@ -1,0 +1,634 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model application {
+  id        String      @id
+  studentId String
+  jobId     String
+  status    String      @default("PENDING")
+  resumeUrl String?
+  appliedAt DateTime    @default(now())
+  job       job         @relation(fields: [jobId], references: [id], map: "Application_jobId_fkey")
+  student   student     @relation(fields: [studentId], references: [id], map: "Application_studentId_fkey")
+  interview interview[]
+
+  @@index([jobId], map: "Application_jobId_idx")
+  @@index([studentId], map: "Application_studentId_idx")
+}
+
+model assignment {
+  id          String                @id
+  title       String
+  description String?               @db.Text
+  order       Int                   @default(0)
+  xpReward    Int                   @default(50)
+  difficulty  assignment_difficulty @default(BEGINNER)
+  courseId    String
+  moduleId    String?
+  course      course                @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Assignment_courseId_fkey")
+  module      module?               @relation(fields: [moduleId], references: [id], map: "Assignment_moduleId_fkey")
+  question    question[]
+  submission  submission[]
+
+  @@index([courseId], map: "Assignment_courseId_idx")
+  @@index([moduleId], map: "Assignment_moduleId_fkey")
+}
+
+model badge {
+  id            String      @id
+  name          String      @unique(map: "Badge_name_key")
+  description   String
+  icon          String
+  rarity        String      @default("COMMON")
+  xpRequirement Int         @default(0)
+  userbadge     userbadge[]
+}
+
+model certificate {
+  id        String   @id
+  studentId String
+  courseId  String
+  title     String
+  issueDate DateTime @default(now())
+  url       String
+  qrCode    String?
+  student   student  @relation(fields: [studentId], references: [id], map: "Certificate_studentId_fkey")
+
+  @@index([studentId], map: "Certificate_studentId_idx")
+}
+
+model certification {
+  id            String    @id
+  studentId     String
+  title         String
+  issuingOrg    String
+  issueDate     DateTime?
+  expiryDate    DateTime?
+  credentialId  String?
+  credentialUrl String?
+  fileUrl       String?
+  createdAt     DateTime  @default(now())
+  student       student   @relation(fields: [studentId], references: [id], onDelete: Cascade, map: "Certification_studentId_fkey")
+
+  @@index([studentId], map: "Certification_studentId_idx")
+}
+
+model company {
+  id         String       @id
+  userId     String       @unique(map: "Company_userId_key")
+  industry   String?
+  size       String?
+  user       user         @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Company_userId_fkey")
+  internship internship[]
+  interview  interview[]
+  job        job[]
+
+  @@index([industry], map: "Company_industry_idx")
+}
+
+model course {
+  id             String            @id
+  title          String
+  slug           String            @unique(map: "Course_slug_key")
+  shortDesc      String?           @db.Text
+  fullDesc       String?           @db.LongText
+  thumbnail      String?
+  banner         String?
+  introVideo     String?
+  previewVideo   String?
+  price          Float             @default(0)
+  category       String
+  difficulty     course_difficulty @default(BEGINNER)
+  tags           Json?
+  language       String            @default("English")
+  duration       String?
+  status         course_status     @default(DRAFT)
+  publishedAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  institutionId  String?
+  instructorName String?
+  assignment     assignment[]
+  institution    institution?      @relation(fields: [institutionId], references: [id], map: "Course_institutionId_fkey")
+  courseprogress courseprogress[]
+  enrollment     enrollment[]
+  exam           exam[]
+  module         module[]
+
+  @@index([category], map: "Course_category_idx")
+  @@index([difficulty], map: "Course_difficulty_idx")
+  @@index([institutionId], map: "Course_institutionId_fkey")
+  @@index([status], map: "Course_status_idx")
+}
+
+model courseprogress {
+  id             String    @id
+  studentId      String
+  courseId       String
+  percentage     Float     @default(0)
+  isCompleted    Boolean   @default(false)
+  completedAt    DateTime?
+  lastAccessedAt DateTime  @default(now())
+  course         course    @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "CourseProgress_courseId_fkey")
+  student        student   @relation(fields: [studentId], references: [id], onDelete: Cascade, map: "CourseProgress_studentId_fkey")
+
+  @@unique([studentId, courseId], map: "CourseProgress_studentId_courseId_key")
+  @@index([courseId], map: "CourseProgress_courseId_fkey")
+}
+
+model document {
+  id        String   @id
+  studentId String
+  name      String
+  type      String
+  fileUrl   String
+  createdAt DateTime @default(now())
+  student   student  @relation(fields: [studentId], references: [id], onDelete: Cascade, map: "Document_studentId_fkey")
+
+  @@index([studentId], map: "Document_studentId_idx")
+}
+
+model education {
+  id          String   @id
+  studentId   String
+  institution String
+  degree      String
+  branch      String?
+  cgpa        Float?
+  startYear   Int?
+  endYear     Int?
+  isCurrent   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  student     student  @relation(fields: [studentId], references: [id], onDelete: Cascade, map: "Education_studentId_fkey")
+
+  @@index([studentId], map: "Education_studentId_idx")
+}
+
+model enrollment {
+  id         String   @id
+  studentId  String
+  courseId   String
+  enrolledAt DateTime @default(now())
+  course     course   @relation(fields: [courseId], references: [id], map: "Enrollment_courseId_fkey")
+  student    student  @relation(fields: [studentId], references: [id], map: "Enrollment_studentId_fkey")
+
+  @@unique([studentId, courseId], map: "Enrollment_studentId_courseId_key")
+  @@index([courseId], map: "Enrollment_courseId_fkey")
+}
+
+model exam {
+  id                 String        @id
+  title              String
+  description        String?       @db.Text
+  duration           Int           @default(60)
+  passPercentage     Float         @default(40)
+  xpReward           Int           @default(200)
+  negativeMarking    Float         @default(0)
+  randomizeQuestions Boolean       @default(true)
+  courseId           String
+  course             course        @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Exam_courseId_fkey")
+  examattempt        examattempt[]
+  question           question[]
+
+  @@index([courseId], map: "Exam_courseId_idx")
+}
+
+model examattempt {
+  id          String    @id
+  studentId   String
+  examId      String
+  score       Float     @default(0)
+  passed      Boolean   @default(false)
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  answers     Json?
+  exam        exam      @relation(fields: [examId], references: [id], map: "ExamAttempt_examId_fkey")
+  student     student   @relation(fields: [studentId], references: [id], map: "ExamAttempt_studentId_fkey")
+
+  @@index([examId], map: "ExamAttempt_examId_idx")
+  @@index([studentId], map: "ExamAttempt_studentId_idx")
+}
+
+model institution {
+  id                            String   @id
+  userId                        String   @unique(map: "Institution_userId_key")
+  verified                      Boolean  @default(false)
+  course                        course[]
+  user_institution_userIdTouser user     @relation("institution_userIdTouser", fields: [userId], references: [id], onDelete: Cascade, map: "Institution_userId_fkey")
+  user_institutioninstructors   user[]   @relation("institutioninstructors")
+
+  @@index([verified], map: "Institution_verified_idx")
+}
+
+model internship {
+  id          String   @id
+  title       String
+  description String   @db.LongText
+  duration    String?
+  stipend     String?
+  companyId   String
+  createdAt   DateTime @default(now())
+  company     company  @relation(fields: [companyId], references: [id], onDelete: Cascade, map: "Internship_companyId_fkey")
+
+  @@index([companyId], map: "Internship_companyId_fkey")
+}
+
+model interview {
+  id            String      @id
+  applicationId String
+  companyId     String
+  startTime     DateTime
+  endTime       DateTime?
+  meetingLink   String?
+  status        String      @default("SCHEDULED")
+  feedback      String?     @db.Text
+  application   application @relation(fields: [applicationId], references: [id], map: "Interview_applicationId_fkey")
+  company       company     @relation(fields: [companyId], references: [id], map: "Interview_companyId_fkey")
+
+  @@index([applicationId], map: "Interview_applicationId_idx")
+  @@index([companyId], map: "Interview_companyId_fkey")
+}
+
+model job {
+  id             String        @id
+  title          String
+  description    String        @db.LongText
+  type           String        @default("FULL_TIME")
+  location       String?
+  salaryRange    String?
+  skillsRequired Json?
+  companyId      String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime
+  application    application[]
+  company        company       @relation(fields: [companyId], references: [id], onDelete: Cascade, map: "Job_companyId_fkey")
+
+  @@index([companyId], map: "Job_companyId_idx")
+}
+
+model lesson {
+  id             String           @id
+  title          String
+  type           lesson_type      @default(VIDEO)
+  duration       String?
+  order          Int              @default(0)
+  content        String?          @db.LongText
+  videoUrl       String?
+  pdfUrl         String?
+  thumbnail      String?
+  attachments    Json?
+  moduleId       String
+  module         module           @relation(fields: [moduleId], references: [id], onDelete: Cascade, map: "Lesson_moduleId_fkey")
+  lessonprogress lessonprogress[]
+
+  @@index([moduleId], map: "Lesson_moduleId_idx")
+  @@index([order], map: "Lesson_order_idx")
+}
+
+model lessonprogress {
+  id          String   @id
+  studentId   String
+  lessonId    String
+  isWatched   Boolean  @default(false)
+  watchTime   Int      @default(0)
+  isCompleted Boolean  @default(false)
+  updatedAt   DateTime
+  lesson      lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade, map: "LessonProgress_lessonId_fkey")
+  student     student  @relation(fields: [studentId], references: [id], onDelete: Cascade, map: "LessonProgress_studentId_fkey")
+
+  @@unique([studentId, lessonId], map: "LessonProgress_studentId_lessonId_key")
+  @@index([lessonId], map: "LessonProgress_lessonId_fkey")
+}
+
+model message {
+  id                            String   @id
+  senderId                      String
+  receiverId                    String
+  content                       String   @db.Text
+  isRead                        Boolean  @default(false)
+  createdAt                     DateTime @default(now())
+  user_message_receiverIdTouser user     @relation("message_receiverIdTouser", fields: [receiverId], references: [id], map: "Message_receiverId_fkey")
+  user_message_senderIdTouser   user     @relation("message_senderIdTouser", fields: [senderId], references: [id], map: "Message_senderId_fkey")
+
+  @@index([receiverId], map: "Message_receiverId_idx")
+  @@index([senderId], map: "Message_senderId_idx")
+}
+
+model module {
+  id          String       @id
+  title       String
+  description String?      @db.Text
+  order       Int          @default(0)
+  courseId    String
+  assignment  assignment[]
+  lesson      lesson[]
+  course      course       @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Module_courseId_fkey")
+
+  @@index([courseId], map: "Module_courseId_idx")
+  @@index([order], map: "Module_order_idx")
+}
+
+model notification {
+  id        String   @id
+  userId    String
+  title     String
+  message   String   @db.Text
+  type      String   @default("INFO")
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], map: "Notification_userId_fkey")
+
+  @@index([userId], map: "Notification_userId_idx")
+}
+
+model notificationpreference {
+  id          String  @id
+  userId      String  @unique(map: "NotificationPreference_userId_key")
+  email       Boolean @default(true)
+  push        Boolean @default(true)
+  assignments Boolean @default(true)
+  exams       Boolean @default(true)
+  marketing   Boolean @default(false)
+  user        user    @relation(fields: [userId], references: [id], map: "NotificationPreference_userId_fkey")
+}
+
+model project {
+  id          String   @id
+  studentId   String
+  title       String
+  description String?  @db.LongText
+  repoLink    String?
+  demoLink    String?
+  thumbnail   String?
+  createdAt   DateTime @default(now())
+  images      Json?
+  techStack   Json?
+  updatedAt   DateTime
+  student     student  @relation(fields: [studentId], references: [id], onDelete: Cascade, map: "Project_studentId_fkey")
+
+  @@index([studentId], map: "Project_studentId_idx")
+}
+
+model question {
+  id            String        @id
+  text          String        @db.Text
+  type          question_type @default(MCQ)
+  order         Int           @default(0)
+  points        Int           @default(10)
+  options       Json?
+  correctOption String?
+  starterCode   Json?
+  testCases     Json?
+  memoryLimit   Int?          @default(128)
+  timeLimit     Int?          @default(1000)
+  assignmentId  String?
+  examId        String?
+  assignment    assignment?   @relation(fields: [assignmentId], references: [id], onDelete: Cascade, map: "Question_assignmentId_fkey")
+  exam          exam?         @relation(fields: [examId], references: [id], onDelete: Cascade, map: "Question_examId_fkey")
+
+  @@index([assignmentId], map: "Question_assignmentId_idx")
+  @@index([examId], map: "Question_examId_idx")
+}
+
+model recommendation {
+  id        String   @id
+  studentId String
+  type      String
+  title     String
+  reason    String   @db.Text
+  link      String?
+  createdAt DateTime @default(now())
+  student   student  @relation(fields: [studentId], references: [id], map: "Recommendation_studentId_fkey")
+
+  @@index([studentId], map: "Recommendation_studentId_idx")
+}
+
+model skill {
+  id         String   @id
+  studentId  String
+  name       String
+  level      String   @default("BEGINNER")
+  category   String?
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  student    student  @relation(fields: [studentId], references: [id], onDelete: Cascade, map: "Skill_studentId_fkey")
+
+  @@unique([studentId, name], map: "Skill_studentId_name_key")
+  @@index([studentId], map: "Skill_studentId_idx")
+}
+
+model skillanalysis {
+  id             String   @id
+  studentId      String   @unique(map: "SkillAnalysis_studentId_key")
+  strengths      Json?
+  weaknesses     Json?
+  learningSpeed  Float?
+  lastAnalyzedAt DateTime @default(now())
+  student        student  @relation(fields: [studentId], references: [id], map: "SkillAnalysis_studentId_fkey")
+}
+
+model student {
+  id             String           @id
+  userId         String           @unique(map: "Student_userId_key")
+  xp             Int              @default(0)
+  level          Int              @default(1)
+  streak         Int              @default(0)
+  maxStreak      Int              @default(0)
+  lastActive     DateTime         @default(now())
+  rank           String?          @default("Novice")
+  resumeUrl      String?
+  about          String?          @db.LongText
+  address        String?          @db.Text
+  atsScore       Int?
+  city           String?
+  dob            DateTime?
+  gender         String?
+  headline       String?
+  mobile         String?
+  parentContact  String?
+  pincode        String?
+  resumeData     Json?
+  state          String?
+  whatsapp       String?
+  application    application[]
+  certificate    certificate[]
+  certification  certification[]
+  courseprogress courseprogress[]
+  document       document[]
+  education      education[]
+  enrollment     enrollment[]
+  examattempt    examattempt[]
+  lessonprogress lessonprogress[]
+  project        project[]
+  recommendation recommendation[]
+  skill          skill[]
+  skillanalysis  skillanalysis?
+  user           user             @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Student_userId_fkey")
+  submission     submission[]
+  userbadge      userbadge[]
+  attendance     attendance[]
+  dailygoal      dailygoal[]
+
+  @@index([level], map: "Student_level_idx")
+  @@index([xp], map: "Student_xp_idx")
+}
+
+model submission {
+  id           String     @id
+  studentId    String
+  assignmentId String
+  answers      Json?
+  score        Float      @default(0)
+  isPassed     Boolean    @default(false)
+  feedback     String?    @db.Text
+  submittedAt  DateTime   @default(now())
+  assignment   assignment @relation(fields: [assignmentId], references: [id], map: "Submission_assignmentId_fkey")
+  student      student    @relation(fields: [studentId], references: [id], map: "Submission_studentId_fkey")
+
+  @@index([assignmentId], map: "Submission_assignmentId_idx")
+  @@index([studentId], map: "Submission_studentId_idx")
+}
+
+model user {
+  id                                   String                  @id @default(cuid())
+  email                                String                  @unique(map: "User_email_key")
+  password                             String
+  name                                 String
+  gender                               String?
+  phone                                String?
+  role                                 user_role               @default(STUDENT)
+  avatar                               String?
+  banner                               String?
+  bio                                  String?                 @db.Text
+  location                             String?
+  website                              String?
+  socialLinks                          Json?
+  lastLogin                            DateTime?
+  isEmailVerified                      Boolean                 @default(false)
+  createdAt                            DateTime                @default(now())
+  updatedAt                            DateTime                @updatedAt
+  company                              company?
+  admin                                admin?
+  institution_institution_userIdTouser institution?            @relation("institution_userIdTouser")
+  message_message_receiverIdTouser     message[]               @relation("message_receiverIdTouser")
+  message_message_senderIdTouser       message[]               @relation("message_senderIdTouser")
+  notification                         notification[]
+  notificationpreference               notificationpreference?
+  student                              student?
+  xptransaction                        xptransaction[]
+  institution_institutioninstructors   institution[]           @relation("institutioninstructors")
+
+  @@index([email], map: "User_email_idx")
+  @@index([role], map: "User_role_idx")
+}
+
+model admin {
+  id        String   @id @default(cuid())
+  userId    String   @unique(map: "Admin_userId_key")
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Admin_userId_fkey")
+}
+
+
+model userbadge {
+  id         String   @id
+  studentId  String
+  badgeId    String
+  unlockedAt DateTime @default(now())
+  badge      badge    @relation(fields: [badgeId], references: [id], map: "UserBadge_badgeId_fkey")
+  student    student  @relation(fields: [studentId], references: [id], map: "UserBadge_studentId_fkey")
+
+  @@unique([studentId, badgeId], map: "UserBadge_studentId_badgeId_key")
+  @@index([badgeId], map: "UserBadge_badgeId_fkey")
+}
+
+model xptransaction {
+  id        String   @id
+  userId    String
+  amount    Int
+  reason    String
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], map: "XPTransaction_userId_fkey")
+
+  @@index([userId], map: "XPTransaction_userId_idx")
+}
+
+model banner {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String?
+  image     String
+  link      String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model attendance {
+  id        String   @id @default(cuid())
+  studentId String
+  date      DateTime @default(now())
+  status    String   @default("PRESENT")
+  student   student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, date])
+}
+
+model dailygoal {
+  id        String   @id @default(cuid())
+  studentId String
+  title     String
+  completed Boolean  @default(false)
+  date      DateTime @default(now())
+  student   student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+enum lesson_type {
+  VIDEO
+  PDF
+  QUIZ
+  ASSIGNMENT
+  LIVE_CLASS
+  TEXT
+}
+
+enum question_type {
+  MCQ
+  CODING
+  FILL_BLANKS
+  TRUE_FALSE
+  SQL
+}
+
+enum user_role {
+  STUDENT
+  ADMIN
+  INSTITUTION
+  COMPANY
+}
+
+enum assignment_difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum course_difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum course_status {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  PENDING_REVIEW
+}
