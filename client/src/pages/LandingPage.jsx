@@ -62,7 +62,7 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#ece8f5] font-sans selection:bg-pink-100 overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#F6EAF4] font-sans selection:bg-pink-100 overflow-x-hidden relative">
       {/* Cinematic Noise Texture Overlay */}
       <div className="fixed inset-0 z-[1] opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       
@@ -73,7 +73,7 @@ const LandingPage = () => {
       <section className="relative z-10 pt-40 pb-20 px-6 flex flex-col items-center justify-center min-h-[95vh] text-center overflow-hidden">
         {/* Animated Background Atmosphere */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#d4d0e6]/40 via-[#ece8f5]/60 to-[#f1e6f0]/40" />
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#F6EAF4] via-[#F3E4F1] to-[#F6EAF4]" />
           
           {/* Layered Radial Glows */}
           <div className="absolute top-1/4 -left-1/4 w-[600px] h-[600px] bg-violet-400/10 blur-[120px] rounded-full animate-pulse" />

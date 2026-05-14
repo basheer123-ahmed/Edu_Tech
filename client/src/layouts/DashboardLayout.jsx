@@ -101,7 +101,7 @@ const DashboardLayout = ({ role = 'ADMIN' }) => {
   const sidebarWidth = isCollapsed ? '90px' : '260px';
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex overflow-x-hidden">
+    <div className="min-h-screen bg-[#F6EAF4] flex overflow-x-hidden">
       {/* Sidebar - Desktop */}
       <aside 
         style={{ width: sidebarWidth }}

@@ -60,7 +60,7 @@ const StudentCourses = () => {
   }, [socket]);
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-10 min-h-screen bg-[#f4f2f8]">
+    <div className="p-8 max-w-7xl mx-auto space-y-10 min-h-screen bg-[#F6EAF4]">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
         <div>

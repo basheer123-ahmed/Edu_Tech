@@ -48,7 +48,7 @@ const StudentDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f2f8] font-sans pb-20 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F6EAF4] font-sans pb-20 overflow-x-hidden">
       {/* Ambient background effects */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-violet-400/5 blur-[120px] animate-pulse" />
