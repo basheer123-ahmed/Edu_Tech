@@ -4,12 +4,21 @@ import { Mail, Lock, User, ArrowRight, Phone, ChevronRight } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import axios from 'axios';
+import { ShieldCheck, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 const RegisterPage = () => {
   const [role, setRole] = useState('STUDENT');
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
+
+  // OTP State
+  const [otp, setOtp] = useState('');
+  const [showOTPField, setShowOTPField] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isSendingOTP, setIsSendingOTP] = useState(false);
+  const [isVerifyingOTP, setIsVerifyingOTP] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -22,6 +31,53 @@ const RegisterPage = () => {
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Reset verification if email changes
+    if (e.target.name === 'email') {
+      setIsEmailVerified(false);
+      setShowOTPField(false);
+    }
+  };
+
+  const handleSendOTP = async () => {
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      return toast.error('Please enter a valid email address');
+    }
+
+    setIsSendingOTP(true);
+    try {
+      const response = await axios.post('http://localhost:5000/api/otp/send-otp', { email: formData.email });
+      if (response.data.success) {
+        setShowOTPField(true);
+        toast.success(`OTP sent to ${formData.email}`);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to send OTP');
+    } finally {
+      setIsSendingOTP(false);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    if (!otp || otp.length !== 6) {
+      return toast.error('Please enter the 6-digit OTP');
+    }
+
+    setIsVerifyingOTP(true);
+    try {
+      const response = await axios.post('http://localhost:5000/api/otp/verify-otp', { 
+        email: formData.email, 
+        otp 
+      });
+      if (response.data.success) {
+        setIsEmailVerified(true);
+        setShowOTPField(false);
+        toast.success('Email verified successfully!');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Invalid OTP');
+    } finally {
+      setIsVerifyingOTP(false);
+    }
   };
 
   const handleRegister = async (e) => {
@@ -111,19 +167,67 @@ const RegisterPage = () => {
 
           <div className="space-y-2">
             <label className="text-xs font-black text-slate-700 uppercase tracking-widest ml-1">Email Address</label>
-            <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-500 transition-colors" size={18} />
-              <input 
-                name="email"
-                type="email" 
-                required
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="name@example.com"
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all focus:bg-white"
-              />
+            <div className="flex gap-2">
+              <div className="relative group flex-1">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-violet-500 transition-colors" size={18} />
+                <input 
+                  name="email"
+                  type="email" 
+                  required
+                  disabled={isEmailVerified}
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="name@example.com"
+                  className={`w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all focus:bg-white ${isEmailVerified ? 'opacity-70 border-emerald-200' : ''}`}
+                />
+                {isEmailVerified && (
+                  <CheckCircle2 className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500" size={18} />
+                )}
+              </div>
+              {!isEmailVerified && (
+                <button 
+                  type="button"
+                  onClick={handleSendOTP}
+                  disabled={isSendingOTP || !formData.email}
+                  className="px-6 rounded-2xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-wider hover:bg-black transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isSendingOTP ? <RefreshCw className="animate-spin" size={14} /> : 'Send OTP'}
+                </button>
+              )}
             </div>
           </div>
+
+          {showOTPField && !isEmailVerified && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-5 bg-violet-50 rounded-2xl border border-violet-100 space-y-4"
+            >
+              <div className="flex items-center gap-2 text-violet-700">
+                <ShieldCheck size={18} />
+                <span className="text-xs font-black uppercase tracking-wider">Verify your email</span>
+              </div>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  maxLength={6}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                  placeholder="6-Digit OTP"
+                  className="flex-1 bg-white border border-violet-200 rounded-xl py-3 px-4 text-center text-lg font-black tracking-widest focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500"
+                />
+                <button 
+                  type="button"
+                  onClick={handleVerifyOTP}
+                  disabled={isVerifyingOTP || otp.length !== 6}
+                  className="px-6 rounded-xl bg-violet-600 text-white text-[10px] font-black uppercase tracking-wider hover:bg-violet-700 transition-all disabled:opacity-50"
+                >
+                  {isVerifyingOTP ? 'Verifying...' : 'Verify'}
+                </button>
+              </div>
+              <p className="text-[10px] text-violet-500 font-medium px-1 italic">* We've sent a code to your email. It expires in 5 minutes.</p>
+            </motion.div>
+          )}
 
           <div className="space-y-2">
             <label className="text-xs font-black text-slate-700 uppercase tracking-widest ml-1">Phone Number (Optional)</label>
@@ -177,8 +281,12 @@ const RegisterPage = () => {
           <div className="pt-6">
             <button 
               type="submit"
-              disabled={isLoading}
-              className="w-full py-4 rounded-2xl bg-violet-600 text-white font-black text-sm uppercase tracking-wider shadow-lg shadow-violet-200 hover:bg-violet-700 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+              disabled={isLoading || !isEmailVerified}
+              className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-2 ${
+                isEmailVerified 
+                ? 'bg-violet-600 text-white shadow-violet-200 hover:bg-violet-700 hover:-translate-y-0.5' 
+                : 'bg-slate-100 text-slate-400 shadow-none cursor-not-allowed'
+              }`}
             >
               {isLoading ? 'Processing...' : 'Submit Registration'}
               {!isLoading && <ChevronRight size={18} />}
