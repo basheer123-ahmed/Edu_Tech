@@ -22,6 +22,14 @@ const StudentCourses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [stats, setStats] = useState({
+    available: 0,
+    enrolled: 0,
+    completed: 0,
+    certificates: 0,
+    enrolledCourseIds: [],
+    completedCourseIds: []
+  });
   const socket = useSocket();
 
   const fetchCourses = async () => {
@@ -35,8 +43,41 @@ const StudentCourses = () => {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await axios.get('http://localhost:5000/api/student/courses/stats', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setStats(res.data);
+    } catch (error) {
+      console.error('Failed to load student course stats', error);
+    }
+  };
+
+  const handleEnroll = async (courseId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please log in first');
+        return;
+      }
+      const res = await axios.post(
+        'http://localhost:5000/api/student/courses/enroll',
+        { courseId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success(res.data.message || 'Successfully enrolled! 🚀');
+      fetchStats();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to enroll');
+    }
+  };
+
   useEffect(() => {
     fetchCourses();
+    fetchStats();
   }, [search]);
 
   useEffect(() => {
@@ -44,16 +85,21 @@ const StudentCourses = () => {
       socket.on('course:published', (newCourse) => {
         setCourses(prev => [newCourse, ...prev]);
         toast.success(`New course available: ${newCourse.title}`, { icon: '🚀' });
+        fetchStats();
       });
 
-      socket.on('course:updated', () => fetchCourses());
+      socket.on('course:updated', () => {
+        fetchCourses();
+        fetchStats();
+      });
       socket.on('course:deleted', (id) => {
         setCourses(prev => prev.filter(c => c.id !== id));
+        fetchStats();
       });
 
       return () => {
         socket.off('course:published');
-        socket.off('course:updated');
+        socket.off('socket:updated');
         socket.off('course:deleted');
       };
     }
@@ -88,10 +134,10 @@ const StudentCourses = () => {
       {/* Stats Summary - Premium Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: 'Available', value: courses.length, icon: <BookOpen />, color: 'blue' },
-          { label: 'Enrolled', value: '0', icon: <Layers />, color: 'violet' },
-          { label: 'Completed', value: '0', icon: <CheckCircle />, color: 'emerald' },
-          { label: 'Certificates', value: '0', icon: <Award />, color: 'orange' },
+          { label: 'Available', value: stats.available || courses.length, icon: <BookOpen />, color: 'blue' },
+          { label: 'Enrolled', value: stats.enrolled, icon: <Layers />, color: 'violet' },
+          { label: 'Completed', value: stats.completed, icon: <CheckCircle />, color: 'emerald' },
+          { label: 'Certificates', value: stats.certificates, icon: <Award />, color: 'orange' },
         ].map((stat, i) => (
           <motion.div 
             key={i}
@@ -184,13 +230,39 @@ const StudentCourses = () => {
                     </div>
                   </div>
 
-                  {/* Action Button */}
-                  <Link 
-                    to={`${course.id}`}
-                    className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm tracking-wide flex items-center justify-center gap-3 transition-all duration-300 hover:bg-violet-600 hover:shadow-xl hover:shadow-violet-200 hover:-translate-y-1 active:scale-95"
-                  >
-                    View Course Details <ChevronRight size={18} />
-                  </Link>
+                  {/* Action Buttons based on enrollment state */}
+                  <div className="mt-auto pt-4">
+                    {stats.completedCourseIds.includes(course.id) ? (
+                      <Link 
+                        to={`/dashboard/student/certificates`}
+                        className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black text-sm tracking-wide flex items-center justify-center gap-3 transition-all duration-300 hover:bg-emerald-700 hover:shadow-xl hover:shadow-emerald-200/20 hover:-translate-y-1 active:scale-95"
+                      >
+                        🏆 View Certificate <ChevronRight size={18} />
+                      </Link>
+                    ) : stats.enrolledCourseIds.includes(course.id) ? (
+                      <Link 
+                        to={`/dashboard/student/assignments/${course.id}`}
+                        className="w-full py-4 bg-violet-600 text-white rounded-2xl font-black text-sm tracking-wide flex items-center justify-center gap-3 transition-all duration-300 hover:bg-violet-700 hover:shadow-xl hover:shadow-violet-200/20 hover:-translate-y-1 active:scale-95"
+                      >
+                        ✅ Continue Learning <ChevronRight size={18} />
+                      </Link>
+                    ) : (
+                      <div className="flex gap-3 w-full">
+                        <Link 
+                          to={`${course.id}`}
+                          className="flex-1 py-4 bg-slate-100 text-slate-700 rounded-2xl font-black text-sm tracking-wide flex items-center justify-center gap-2 transition-all duration-300 hover:bg-slate-200 hover:-translate-y-0.5 active:scale-95 border border-slate-200/50"
+                        >
+                          Details
+                        </Link>
+                        <button 
+                          onClick={() => handleEnroll(course.id)}
+                          className="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-sm tracking-wide flex items-center justify-center gap-2 transition-all duration-300 hover:bg-violet-600 hover:shadow-xl hover:shadow-violet-200/20 hover:-translate-y-0.5 active:scale-95"
+                        >
+                          🚀 Enroll Now
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}

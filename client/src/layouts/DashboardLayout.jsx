@@ -55,6 +55,7 @@ const DashboardLayout = ({ role = 'ADMIN' }) => {
     {
       label: 'System',
       items: [
+        { name: 'Proctoring Logs', path: '/dashboard/admin/exams/monitoring', icon: Shield },
         { name: 'Notifications', path: '/dashboard/admin/notifications', icon: Bell },
         { name: 'AI Insights', path: '/dashboard/admin/ai-insights', icon: Bot },
         { name: 'Activity', path: '/dashboard/admin/activity-logs', icon: Activity },

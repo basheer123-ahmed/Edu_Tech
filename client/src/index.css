@@ -4,7 +4,13 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-[#F6EAF4] to-[#F3E4F1] text-slate-900 font-sans antialiased min-h-screen;
+    background: linear-gradient(
+      135deg,
+      #FFF0F6 0%,
+      #FFF8FA 50%,
+      #F5EEF6 100%
+    ) !important;
+    @apply text-slate-900 font-sans antialiased min-h-screen;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -12,48 +18,247 @@
   }
 }
 
-@layer components {
-  .btn-primary {
-    @apply px-6 py-2.5 bg-violet-600 text-white rounded-full font-semibold hover:bg-violet-700 transition-all duration-300 shadow-lg shadow-violet-200;
-  }
-  
-  .btn-outline {
-    @apply px-6 py-2.5 border-2 border-violet-600 text-violet-600 rounded-full font-semibold hover:bg-violet-600 hover:text-white transition-all duration-300;
-  }
+/* 
+  =========================================
+  THEME OVERRIDES (PLACED OUTSIDE LAYERS FOR HIGHEST SPECIFICITY)
+  =========================================
+*/
 
-  .glass-card {
-    @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.07)];
-  }
-
-  .premium-shadow {
-    @apply shadow-[0_4px_24px_rgba(0,0,0,0.03)];
-  }
-
-  .premium-shadow-hover {
-    @apply hover:shadow-[0_8px_32px_rgba(0,0,0,0.06)];
-  }
+/* Global Layout Backgrounds */
+.bg-\[\#F6EAF4\],
+.bg-\[\#f4f2f8\],
+.bg-\[\#F3EAFD\] {
+  background: linear-gradient(
+    135deg,
+    #FFF0F6 0%,
+    #FFF8FA 50%,
+    #F5EEF6 100%
+  ) !important;
 }
 
-/* Custom Scrollbar for Light Theme */
+/* Sections background */
+.bg-\[\#F5F3FF\]\/50 {
+  background: rgba(254, 242, 242, 0.4) !important;
+}
+.bg-\[\#FDF2F8\]\/30 {
+  background: rgba(254, 242, 242, 0.3) !important;
+}
+
+/* Text color overrides */
+.text-slate-900 {
+  color: #1F2937 !important;
+}
+.text-slate-500 {
+  color: #6B7280 !important;
+}
+.text-slate-400 {
+  color: #9CA3AF !important;
+}
+.text-violet-600, .text-purple-600 {
+  color: #F43F5E !important;
+}
+.text-pink-600, .text-fuchsia-600, .text-fuchsia-500 {
+  color: #EC4899 !important;
+}
+
+/* Primary buttons overrides - Warm Rose-Pink Gradient */
+.btn-primary, 
+button.bg-violet-600, 
+a.bg-violet-600,
+button.bg-gradient-to-r {
+  background: linear-gradient(
+    135deg,
+    #F472B6,
+    #F43F5E
+  ) !important;
+  border: none !important;
+  color: white !important;
+}
+.btn-primary:hover, 
+button.bg-violet-600:hover, 
+a.bg-violet-600:hover,
+button.bg-gradient-to-r:hover {
+  background: linear-gradient(
+    135deg,
+    #EC4899,
+    #E11D48
+  ) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(244, 114, 182, 0.2) !important;
+}
+
+/* Secondary buttons overrides */
+.btn-outline, 
+button.bg-white, 
+button.bg-slate-50 {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  color: #1F2937 !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Glassmorphic cards globally */
+.glass-card, 
+.bg-white,
+.bg-white\/80,
+.bg-white\/90,
+div.bg-white {
+  background: rgba(255, 255, 255, 0.60) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 8px 24px rgba(244, 114, 182, 0.04) !important;
+  border-radius: 22px !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Premium Card Hover Animation: Lift & Balanced Pink Glass Glow */
+.glass-card:hover,
+.bg-white:hover,
+.bg-white\/80:hover,
+.bg-white\/90:hover,
+div.bg-white:hover {
+  transform: translateY(-6px) !important;
+  background: rgba(255, 240, 246, 0.75) !important;
+  border-color: rgba(244, 114, 182, 0.4) !important;
+  box-shadow: 
+    0 16px 36px rgba(244, 114, 182, 0.12),
+    0 0 0 1px rgba(244, 114, 182, 0.05) inset !important;
+}
+
+/* Keep inputs, textareas, and select elements clean and interactive */
+input, textarea, select {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+}
+input:focus, textarea:focus, select:focus {
+  background: #ffffff !important;
+  border-color: #F472B6 !important;
+}
+input:hover, textarea:hover, select:hover,
+input:focus, textarea:focus, select:focus {
+  transform: none !important;
+}
+
+/* Layout component resets: Sidebar and Header must not have rounded card shapes */
+header,
+header.bg-white\/80,
+aside,
+aside > div,
+aside div.flex.flex-col.h-full,
+div.absolute.inset-y-0.left-0.w-64 div.flex.flex-col.h-full {
+  border-radius: 0px !important;
+  transition: none !important;
+}
+
+/* Prevent hover movements and background updates on layout frames */
+header:hover,
+header.bg-white\/80:hover,
+aside:hover,
+aside > div:hover,
+aside div.flex.flex-col.h-full:hover,
+div.absolute.inset-y-0.left-0.w-64 div.flex.flex-col.h-full:hover {
+  transform: none !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 8px 32px rgba(244, 114, 182, 0.05) !important;
+}
+
+header.bg-white\/80:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Header style override */
+header.bg-white\/80 {
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Sidebar style override */
+aside > div,
+aside div.flex.flex-col.h-full,
+div.absolute.inset-y-0.left-0.w-64 div.flex.flex-col.h-full {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(24px) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  box-shadow: 0 8px 32px rgba(244, 114, 182, 0.05) !important;
+}
+
+aside a.bg-violet-600 {
+  background: linear-gradient(
+    135deg,
+    #F472B6,
+    #F43F5E
+  ) !important;
+  color: white !important;
+  box-shadow: 0 8px 24px rgba(244, 114, 182, 0.2) !important;
+}
+
+aside a:not(.bg-violet-600):hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+  color: #1F2937 !important;
+}
+
+/* Chart and gauge colors mapping to Warm Rose-Pink */
+stop[stop-color="#7c3aed"], 
+stop[stop-color="#9333EA"], 
+stop[stop-color="#8B5CF6"] {
+  stop-color: #F43F5E !important;
+}
+
+stop[stop-color="#f97316"], 
+stop[stop-color="#EC4899"], 
+stop[stop-color="#f59e0b"], 
+stop[stop-color="#F59E0B"] {
+  stop-color: #F472B6 !important;
+}
+
+g.recharts-bar-rectangles rect[fill="#3B82F6"], 
+g.recharts-bar-rectangles rect[fill="#7c3aed"],
+g.recharts-bar-rectangles rect[fill="#9333EA"] {
+  fill: #F43F5E !important;
+}
+
+g.recharts-bar-rectangles rect[fill="#10B981"],
+g.recharts-bar-rectangles rect[fill="#f97316"] {
+  fill: #F472B6 !important;
+}
+
+circle[stroke="#7c3aed"], 
+circle[stroke="#06B6D4"],
+circle[stroke="#9333EA"] {
+  stroke: #F43F5E !important;
+}
+
+circle[stroke="#3B82F6"], 
+circle[stroke="#f97316"],
+path[stroke="#10B981"] {
+  stroke: #F472B6 !important;
+}
+
+stop[stop-color="#10B981"] {
+  stop-color: #F472B6 !important;
+}
+
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: rgba(244, 114, 182, 0.2);
   border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
-}
-
-/* Animations */
-.glow-violet {
-  box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+  background: rgba(244, 114, 182, 0.4);
 }

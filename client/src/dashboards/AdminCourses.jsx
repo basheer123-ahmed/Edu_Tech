@@ -211,6 +211,12 @@ const AdminCourses = () => {
                     </td>
                     <td className="px-6 py-6">
                       <div className="flex items-center gap-3">
+                        <Link 
+                          to={`/dashboard/admin/courses/${course.id}/assignments`} 
+                          className="px-4 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 rounded-xl font-bold text-xs transition shadow-sm flex items-center gap-1.5"
+                        >
+                          <BookOpen size={14} /> Assignments
+                        </Link>
                         <Link to={`/dashboard/admin/courses/edit/${course.id}`} className="p-2.5 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-violet-600 hover:border-violet-100 hover:bg-violet-50 transition shadow-sm">
                           <Edit2 size={16} />
                         </Link>

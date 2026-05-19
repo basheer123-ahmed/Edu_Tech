@@ -24,7 +24,7 @@ const CoursesPage = () => {
   );
 
   return (
-    <div className="pt-32 pb-20 bg-gray-50 min-h-screen">
+    <div className="pt-32 pb-20 bg-transparent min-h-screen">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-8">

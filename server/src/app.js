@@ -77,6 +77,7 @@ app.use('/api/profile', require('./routes/studentProfile.routes'));
 app.use('/api/admin', require('./routes/admin.routes'));
 app.use('/api/student', require('./routes/student.routes'));
 app.use('/api/otp', require('./routes/otp.routes'));
+app.use('/api/public', require('./routes/public.routes'));
 
 // Health check
 app.get('/health', (req, res) => {

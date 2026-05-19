@@ -89,13 +89,34 @@ const AIChatWidget = () => {
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setIsLoading(false);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Please log in to chat with SkillBot! 🔒" }]);
+      return;
+    }
+
     try {
-      const res = await axios.post('http://localhost:5000/api/ai/chat', { message: input, history: messages });
+      const res = await axios.post(
+        'http://localhost:5000/api/ai/chat',
+        { message: input, history: messages },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       if (res.data.status === 'success') {
         setMessages(prev => [...prev, { role: 'assistant', content: res.data.reply }]);
       }
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Neural sync error. Try again! Beep!" }]);
+      console.error('[AIChatWidget ERROR] Failed to send chat message:', err.response?.data || err.message);
+      if (err.response?.status === 401) {
+        setMessages(prev => [...prev, { role: 'assistant', content: "Your session has expired or is invalid. Please log in again. 🔒" }]);
+      } else {
+        setMessages(prev => [...prev, { role: 'assistant', content: "Neural sync error. Try again! Beep!" }]);
+      }
     } finally {
       setIsLoading(false);
     }

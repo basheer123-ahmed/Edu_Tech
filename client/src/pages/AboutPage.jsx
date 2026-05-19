@@ -24,7 +24,7 @@ const AboutPage = () => {
       </section>
 
       {/* Stats */}
-      <section className="bg-secondary py-20 mb-20">
+      <section className="bg-slate-900/50 backdrop-blur-md border-y border-slate-800/40 py-20 mb-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 text-center text-white">
             {[
@@ -34,8 +34,8 @@ const AboutPage = () => {
               { label: "Success Rate", value: "94%" },
             ].map((stat, idx) => (
               <div key={idx}>
-                <h3 className="text-4xl font-bold text-primary mb-2">{stat.value}</h3>
-                <p className="text-gray-400 font-medium">{stat.label}</p>
+                <h3 className="text-4xl font-bold text-pink-500 mb-2">{stat.value}</h3>
+                <p className="text-slate-300 font-medium">{stat.label}</p>
               </div>
             ))}
           </div>

@@ -1,28 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
-  Sparkles, 
-  Rocket, 
-  User, 
-  Clock, 
-  HeartPulse, 
-  Book, 
-  Star, 
-  Smartphone, 
-  Image as ImageIcon, 
-  LayoutGrid,
-  Activity,
-  Zap,
-  Shield,
-  Monitor,
-  CheckCircle2,
-  ChevronRight,
-  GraduationCap,
-  Bot
+  Sparkles, Rocket, User, Clock, Star, Smartphone, 
+  ImageIcon, LayoutGrid, Activity, Zap, Shield, Monitor, 
+  CheckCircle2, ChevronRight, GraduationCap, Bot, Code2, 
+  Flame, Trophy, BadgeCheck, FileCheck, ArrowRight, Brain, Cpu
 } from 'lucide-react';
 
 const LandingPage = () => {
+  // Dynamic stats state
+  const [stats, setStats] = useState({
+    totalStudents: 12500,
+    totalCourses: 8,
+    totalSubmissions: 8420,
+    totalAIExams: 15,
+    activeLearners: 980,
+    certificationsIssued: 240
+  });
+
+  // Leaderboard state
+  const [topStudents, setTopStudents] = useState([
+    { name: 'Basheer Ahmed', xp: 7520, streak: 18, rank: 'Platinum' },
+    { name: 'John Doe', xp: 5200, streak: 12, rank: 'Gold' },
+    { name: 'Emily Chen', xp: 4850, streak: 9, rank: 'Gold' },
+    { name: 'Sarah Connor', xp: 3900, streak: 7, rank: 'Silver' },
+    { name: 'Alex Mercer', xp: 3400, streak: 5, rank: 'Silver' }
+  ]);
+
+  // Mockup tab state
+  const [activeMockupTab, setActiveMockupTab] = useState('analytics');
+
+  // Load backend statistics
+  useEffect(() => {
+    fetch('http://localhost:5000/api/public/stats')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success && res.data) {
+          setStats(res.data);
+        }
+      })
+      .catch(err => console.log('Error loading landing page stats:', err));
+
+    fetch('http://localhost:5000/api/public/leaderboard')
+      .then(res => res.json())
+      .then(res => {
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          setTopStudents(res.data);
+        }
+      })
+      .catch(err => console.log('Error loading landing page leaderboard:', err));
+  }, []);
+
   const containerVars = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -33,64 +62,48 @@ const LandingPage = () => {
   };
 
   const floatingIcons = [
-    { icon: <User size={40} />, top: '10%', left: '15%', color: 'text-blue-400', delay: 0 },
-    { icon: <Star size={44} />, top: '5%', left: '55%', color: 'text-emerald-400', delay: 1 },
-    { icon: <Smartphone size={32} />, top: '15%', left: '85%', color: 'text-pink-400', delay: 2 },
-    { icon: <LayoutGrid size={36} />, top: '40%', left: '5%', color: 'text-indigo-400', delay: 3 },
-    { icon: <Clock size={32} />, top: '45%', left: '90%', color: 'text-orange-400', delay: 4 },
-    { icon: <ImageIcon size={36} />, top: '75%', left: '12%', color: 'text-blue-500', delay: 1.5 },
-    { icon: <Activity size={32} />, top: '70%', left: '80%', color: 'text-emerald-500', delay: 2.5 },
-    { icon: <Star size={32} />, top: '85%', left: '50%', color: 'text-violet-400', delay: 0.5 },
-  ];
-
-  const features = [
-    { title: 'Expert Curriculum', desc: 'Industry-designed courses built to give you real, job-ready skills from day one.', icon: '🎓', color: 'bg-violet-500' },
-    { title: 'AI-Powered Tutor', desc: 'Get instant answers to your tech questions with our built-in AI assistant 24/7.', icon: '🤖', color: 'bg-fuchsia-500' },
-    { title: 'Track Your Progress', desc: 'Personal dashboard showing all enrolled courses and your complete learning journey.', icon: '📊', color: 'bg-blue-500' },
-    { title: 'Secure Platform', desc: 'Your account protected with industry-standard authentication and encryption.', icon: '🔐', color: 'bg-orange-500' },
-    { title: 'Instant Enrollment', desc: 'One click to enroll. Start learning immediately with no waiting periods.', icon: '⚡', color: 'bg-emerald-500' },
-    { title: 'Learn Anywhere', desc: 'Fully responsive — learn on desktop or mobile whenever and wherever you want.', icon: '🌍', color: 'bg-sky-500' },
-  ];
-
-  const courses = [
-    { title: 'Front End Web Development', category: 'Web Development', level: 'INTERMEDIATE', img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&q=80&w=800' },
-    { title: 'Back End Web Development', category: 'Web Development', level: 'INTERMEDIATE', img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800' },
-    { title: 'Generative AI', category: 'Artificial Intelligence', level: 'INTERMEDIATE', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800' },
-    { title: 'Data Science with Python', category: 'Data Science', level: 'BEGINNER', img: 'https://images.unsplash.com/photo-1551288049-bbda38a5f85d?auto=format&fit=crop&q=80&w=800' },
-    { title: 'Machine Learning', category: 'Machine Learning', level: 'INTERMEDIATE', img: 'https://images.unsplash.com/photo-1527474305487-b87b222841cc?auto=format&fit=crop&q=80&w=800' },
-    { title: 'Python Programming', category: 'Programming', level: 'BEGINNER', img: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800' },
+    { icon: <Code2 size={36} />, top: '12%', left: '12%', color: 'text-blue-500/80', delay: 0, glow: 'rgba(59, 130, 246, 0.4)' },
+    { icon: <Sparkles size={40} />, top: '8%', left: '55%', color: 'text-pink-500/80', delay: 1, glow: 'rgba(236, 72, 153, 0.4)' },
+    { icon: <Bot size={34} />, top: '15%', left: '84%', color: 'text-purple-500/80', delay: 2, glow: 'rgba(168, 85, 247, 0.4)' },
+    { icon: <Activity size={32} />, top: '38%', left: '8%', color: 'text-emerald-500/80', delay: 3, glow: 'rgba(16, 185, 129, 0.4)' },
+    { icon: <Clock size={32} />, top: '42%', left: '88%', color: 'text-orange-500/80', delay: 4, glow: 'rgba(249, 115, 22, 0.4)' },
+    { icon: <Trophy size={34} />, top: '72%', left: '14%', color: 'text-yellow-500/80', delay: 1.5, glow: 'rgba(234, 179, 8, 0.4)' },
+    { icon: <Cpu size={32} />, top: '68%', left: '84%', color: 'text-indigo-500/80', delay: 2.5, glow: 'rgba(99, 102, 241, 0.4)' },
+    { icon: <Brain size={36} />, top: '84%', left: '48%', color: 'text-fuchsia-500/80', delay: 0.5, glow: 'rgba(217, 70, 239, 0.4)' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F6EAF4] font-sans selection:bg-pink-100 overflow-x-hidden relative">
-      {/* Cinematic Noise Texture Overlay */}
-      <div className="fixed inset-0 z-[1] opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+    <div className="bg-transparent font-sans selection:bg-pink-100 overflow-x-hidden relative">
       
-      {/* Ambient Vignette Effect */}
-      <div className="fixed inset-0 z-[2] pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.05)_100%)]" />
-
       {/* 1. HERO SECTION */}
       <section className="relative z-10 pt-40 pb-20 px-6 flex flex-col items-center justify-center min-h-[95vh] text-center overflow-hidden">
+        {/* Cinematic Spotlight Backdrop Behind Hero Text */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-tr from-pink-400/20 to-purple-400/20 blur-[130px] rounded-full pointer-events-none z-0" />
+        
         {/* Animated Background Atmosphere */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#F6EAF4] via-[#F3E4F1] to-[#F6EAF4]" />
-          
-          {/* Layered Radial Glows */}
-          <div className="absolute top-1/4 -left-1/4 w-[600px] h-[600px] bg-violet-400/10 blur-[120px] rounded-full animate-pulse" />
-          <div className="absolute bottom-1/4 -right-1/4 w-[500px] h-[500px] bg-pink-400/10 blur-[100px] rounded-full" />
-          
           {floatingIcons.map((item, idx) => (
             <motion.div
               key={idx}
               animate={{ 
-                opacity: [0.3, 0.5, 0.3],
-                y: [0, -40, 0],
+                opacity: [0.4, 0.8, 0.4],
+                y: [0, -35, 0],
                 x: [0, 20, 0],
-                rotate: [0, 15, 0]
+                rotate: [0, 15, -15, 0],
+                scale: [1, 1.08, 0.96, 1]
               }}
-              transition={{ duration: 7 + idx, repeat: Infinity, ease: "easeInOut", delay: item.delay }}
-              className={`absolute ${item.color} blur-[0.5px] drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]`}
-              style={{ top: item.top, left: item.left }}
+              transition={{ 
+                duration: 9 + idx * 2.5, 
+                repeat: Infinity, 
+                ease: "easeInOut", 
+                delay: item.delay 
+              }}
+              className={`absolute ${item.color} pointer-events-none z-0`}
+              style={{ 
+                top: item.top, 
+                left: item.left,
+                filter: `drop-shadow(0 0 12px ${item.glow})`
+              }}
             >
               {item.icon}
             </motion.div>
@@ -105,9 +118,9 @@ const LandingPage = () => {
             </div>
           </motion.div>
 
-          <motion.h1 variants={itemVars} className="relative text-5xl md:text-6xl font-black text-[#1E1B4B] tracking-tighter leading-[1.05] mb-8">
+          <motion.h1 variants={itemVars} className="relative text-5xl md:text-7xl font-black text-[#1C1236] tracking-tighter leading-[1.05] mb-8 drop-shadow-[0_2px_10px_rgba(28,18,54,0.08)]">
             Discover Learn<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-violet-600 to-indigo-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-fuchsia-600 to-indigo-600 drop-shadow-[0_12px_24px_rgba(236,72,153,0.15)]">
               Achieve Success
             </span>
             <motion.div 
@@ -119,29 +132,34 @@ const LandingPage = () => {
             </motion.div>
           </motion.h1>
 
-          <motion.p variants={itemVars} className="text-base md:text-lg text-slate-600 mb-10 max-w-xl mx-auto leading-relaxed font-bold opacity-80">
+          <motion.p variants={itemVars} className="text-base md:text-lg text-slate-700 mb-10 max-w-xl mx-auto leading-relaxed font-bold opacity-90">
             Our courses dare you to dream bigger, learn smarter, and outperform the ordinary. Join the next generation of industry leaders.
           </motion.p>
 
-          <motion.div variants={itemVars}>
-            <Link to="/register" className="group relative inline-flex items-center gap-3 px-10 py-4 rounded-[1.8rem] bg-gradient-to-r from-pink-600 to-violet-600 text-white font-black text-lg shadow-[0_15px_40px_rgba(236,72,153,0.3)] hover:shadow-[0_20px_50px_rgba(236,72,153,0.5)] hover:-translate-y-1.5 transition-all duration-500">
+          <motion.div variants={itemVars} className="relative inline-block">
+            {/* CTA Button with soft shadow bloom and hover glow */}
+            <Link to="/register" className="group relative inline-flex items-center gap-3 px-10 py-4 rounded-[2rem] bg-gradient-to-r from-pink-600 via-fuchsia-600 to-violet-600 text-white font-black text-lg shadow-[0_10px_35px_rgba(219,39,119,0.35)] hover:shadow-[0_20px_50px_rgba(219,39,119,0.55)] hover:-translate-y-1.5 hover:scale-[1.03] transition-all duration-500">
               <Rocket size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               <span>Get Started Free</span>
-              <div className="absolute inset-0 rounded-[1.8rem] bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
+              <div className="absolute inset-0 rounded-[2rem] bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
+              {/* Outer pulsing ring */}
+              <span className="absolute inset-0 rounded-[2rem] bg-pink-500/20 animate-ping -z-10" />
             </Link>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* 2. STATS SECTION */}
-      <section className="relative z-10 py-16 bg-[#F5F3FF]/50 border-y border-white/40">
+      {/* 2. DYNAMIC STATS SECTION */}
+      <section className="relative z-10 py-16 bg-white/30 backdrop-blur-md border-y border-white/40">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-center">
             {[
-              { label: 'STUDENTS', value: '10K+' },
-              { label: 'PARTNERS', value: '200+' },
-              { label: 'COURSES', value: '15' },
-              { label: 'AI TUTOR', value: 'AI' }
+              { label: 'Total Students', value: stats.totalStudents.toLocaleString() + '+' },
+              { label: 'Total Courses', value: stats.totalCourses },
+              { label: 'Coding Submissions', value: stats.totalSubmissions.toLocaleString() + '+' },
+              { label: 'AI Generated Exams', value: stats.totalAIExams },
+              { label: 'Active Learners', value: stats.activeLearners.toLocaleString() + '+' },
+              { label: 'Certifications Issued', value: stats.certificationsIssued }
             ].map((stat, i) => (
               <motion.div 
                 key={i}
@@ -149,9 +167,12 @@ const LandingPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
+                className="space-y-1"
               >
-                <h3 className="text-5xl font-black text-pink-500 mb-2">{stat.value}</h3>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{stat.label}</p>
+                <h3 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-2">
+                  {stat.value}
+                </h3>
+                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] leading-tight">{stat.label}</p>
               </motion.div>
             ))}
           </div>
@@ -174,7 +195,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* 4. FEATURES SECTION */}
+      {/* 4. IMPLEMENTED FEATURES SHOWCASE */}
       <section className="relative z-10 py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
@@ -187,8 +208,39 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {features.map((feat, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { 
+                title: '🤖 AI Question Generator', 
+                desc: 'Generate up to 40 questions per module. Fully supports custom difficulty ranges, custom tags, MCQs, Coding, or both.', 
+                icon: <Bot size={28} className="text-violet-500" /> 
+              },
+              { 
+                title: '💻 Live Coding Workspace', 
+                desc: 'Integrated Monaco Editor (same code engine powering VS Code) with multi-language execution and live test cases validator.', 
+                icon: <Code2 size={28} className="text-pink-500" /> 
+              },
+              { 
+                title: '🛡 AI Proctored Exams', 
+                desc: 'Full-screen checking, webcam monitoring, sound level check, and entire screen sharing permission verification.', 
+                icon: <Shield size={28} className="text-indigo-500" /> 
+              },
+              { 
+                title: '📈 Productivity Analytics', 
+                desc: 'GitHub-style heatmap contribution tracking, XP growth graphs, streaks counters, and custom skill radar competency charts.', 
+                icon: <Activity size={28} className="text-orange-500" /> 
+              },
+              { 
+                title: '🏆 Smart Roadmaps', 
+                desc: 'Unlock module tasks, track lesson milestones, progress step-by-step through core skill checkpoints and unlock coding tasks.', 
+                icon: <GraduationCap size={28} className="text-emerald-500" /> 
+              },
+              { 
+                title: '🎯 Placement Preparation', 
+                desc: 'Mock placement preparation dashboard, custom mock tests, real corporate interview simulators, and ats-profile analyzer.', 
+                icon: <Trophy size={28} className="text-amber-500" /> 
+              },
+            ].map((feat, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 30 }}
@@ -199,7 +251,9 @@ const LandingPage = () => {
                 className="group p-10 rounded-[2.5rem] bg-white border border-white shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.05)] transition-all duration-500 relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-slate-50 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                <div className="text-4xl mb-8 relative z-10">{feat.icon}</div>
+                <div className="w-14 h-14 bg-slate-900/5 rounded-2xl flex items-center justify-center mb-8 relative z-10">
+                  {feat.icon}
+                </div>
                 <h3 className="text-xl font-black text-slate-900 mb-4 relative z-10">{feat.title}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed font-medium relative z-10">{feat.desc}</p>
               </motion.div>
@@ -208,21 +262,371 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* 5. COURSES SECTION */}
-      <section className="relative z-10 py-32 px-6 bg-[#FDF2F8]/30">
+      {/* 5. INTERACTIVE PLATFORM PREVIEWS / MOCKUPS SECTION */}
+      <section className="relative z-10 py-32 px-6 bg-white/20 backdrop-blur-md border-y border-white/40">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Inside the Workspace</h4>
+            <h2 className="text-4xl md:text-5xl font-black text-[#1E1B4B] mb-6">Real Platform Interface Previews</h2>
+            <p className="text-slate-500 max-w-xl mx-auto font-medium">Explore the dashboard and anti-cheat modules implemented directly in the app.</p>
+          </div>
+
+          {/* Interactive Navigation Tabs */}
+          <div className="flex flex-wrap justify-center gap-3 mb-12">
+            {[
+              { id: 'analytics', label: '📊 Student Analytics' },
+              { id: 'generator', label: '🤖 AI Generator' },
+              { id: 'exam', label: '🛡 Secure Exam Mode' },
+              { id: 'workspace', label: '💻 Coding Workspace' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveMockupTab(tab.id)}
+                className={`px-6 py-3 rounded-full font-black text-xs uppercase tracking-wider transition-all duration-300 ${
+                  activeMockupTab === tab.id
+                    ? 'bg-slate-900 text-white shadow-xl shadow-slate-950/20'
+                    : 'bg-white/40 text-slate-600 hover:bg-white/60 border border-slate-200'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab Content Mockups */}
+          <div className="max-w-5xl mx-auto bg-slate-950 p-6 rounded-[2.5rem] border border-slate-800 shadow-2xl relative min-h-[400px]">
+            
+            {activeMockupTab === 'analytics' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 text-left">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-pink-500 flex items-center justify-center font-black text-white text-lg">J</div>
+                    <div>
+                      <h4 className="text-white font-black text-sm">John Doe</h4>
+                      <p className="text-[10px] text-slate-400">Student Analytics Dashboard</p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[9px] font-black tracking-widest uppercase">Verified Profile</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                    <p className="text-[9px] text-slate-400 font-black uppercase">Employability Rating</p>
+                    <p className="text-white font-black text-xl mt-1">85%</p>
+                  </div>
+                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                    <p className="text-[9px] text-slate-400 font-black uppercase">XP Earned</p>
+                    <p className="text-white font-black text-xl mt-1">3,450 XP</p>
+                  </div>
+                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                    <p className="text-[9px] text-slate-400 font-black uppercase">Certifications</p>
+                    <p className="text-white font-black text-xl mt-1">3 Unlocked</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeMockupTab === 'generator' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 text-left">
+                <div className="border-b border-slate-800 pb-4">
+                  <h4 className="text-white font-black text-sm">AI Module-based Question Generator</h4>
+                  <p className="text-[10px] text-slate-400">Generate up to 40 topic-wise coding challenges</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-[9px] font-black text-slate-400 uppercase">Module Name</label>
+                      <div className="px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white">Java OOP Basics</div>
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-black text-slate-400 uppercase">Topic Tags</label>
+                      <div className="flex gap-1.5 mt-1">
+                        <span className="px-2 py-0.5 bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[8px] font-black rounded">Classes</span>
+                        <span className="px-2 py-0.5 bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[8px] font-black rounded">Inheritance</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-[9px] font-black text-slate-400 uppercase">Question Type</label>
+                      <div className="px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white">Coding Tasks + MCQs</div>
+                    </div>
+                    <button className="w-full py-3 bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white rounded-lg font-black text-xs uppercase shadow-lg shadow-pink-500/10">
+                      🚀 Generate Questions
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeMockupTab === 'exam' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 text-left">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                  <div>
+                    <h4 className="text-white font-black text-sm">Secure Exam Security Verification</h4>
+                    <p className="text-[10px] text-slate-400">Continuous AI verification and proctor check-list</p>
+                  </div>
+                  <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex flex-col items-center justify-center text-center min-h-[160px] relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10" />
+                    <User className="text-pink-500 w-12 h-12 relative z-20 animate-pulse" />
+                    <p className="text-xs font-black text-white relative z-20 mt-2">Webcam Camera Stream Active</p>
+                    <p className="text-[9px] text-emerald-400 font-bold relative z-20 uppercase">Proctoring Connected</p>
+                  </div>
+                  <div className="space-y-2.5 flex flex-col justify-center">
+                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                      <span>Webcam Access</span>
+                      <span className="text-emerald-400">✓ Enabled</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                      <span>Microphone Sound Level</span>
+                      <span className="text-emerald-400">✓ Connected</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                      <span>Fullscreen Verification</span>
+                      <span className="text-emerald-400">✓ Secured</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                      <span>Entire Screen Share</span>
+                      <span className="text-emerald-400">✓ Validated</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeMockupTab === 'workspace' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 text-left">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Interactive Coding Lab</span>
+                  <span className="px-2.5 py-0.5 bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[8px] font-black rounded">Java</span>
+                </div>
+                <div className="font-mono text-xs bg-slate-900 p-4 rounded-xl border border-slate-800 text-slate-300">
+                  <p className="text-slate-500">// Task: Calculate factorial of N recursively</p>
+                  <p><span className="text-purple-400">public int</span> <span className="text-blue-400">factorial</span>(<span className="text-purple-400">int</span> n) &#123;</p>
+                  <p className="pl-4"><span className="text-purple-400">if</span> (n &lt;= 1) <span className="text-purple-400">return</span> 1;</p>
+                  <p className="pl-4"><span className="text-purple-400">return</span> n * factorial(n - 1);</p>
+                  <p>&#125;</p>
+                </div>
+                <div className="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800 text-[10px] font-bold text-emerald-400">
+                  <span>✓ All test cases passed successfully!</span>
+                  <button className="px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase">Run Code</button>
+                </div>
+              </motion.div>
+            )}
+
+          </div>
+        </div>
+      </section>
+
+      {/* 6. PRODUCTIVITY HEATMAP PREVIEW */}
+      <section className="relative z-10 py-32 px-6">
+        <div className="max-w-4xl mx-auto bg-slate-950 p-8 rounded-[2.5rem] border border-slate-800/80 shadow-2xl relative overflow-hidden text-center">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl pointer-events-none" />
+          
+          <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Coding Consistency</h4>
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-6">Productivity Heatmap Preview</h2>
+          <p className="text-slate-400 max-w-xl mx-auto font-medium text-sm mb-10">
+            Every submission, compilation run, and test-case verification is logged onto your annual progress board. 
+            Maintain your daily streak to level up your global rankings.
+          </p>
+
+          {/* Calendar boxes */}
+          <div className="flex justify-center overflow-x-auto pb-4">
+            <div className="flex gap-1.5">
+              {[...Array(20)].map((_, col) => (
+                <div key={col} className="flex flex-col gap-1.5">
+                  {[...Array(7)].map((_, row) => {
+                    const activeIndex = col * 7 + row;
+                    return (
+                      <div 
+                        key={row} 
+                        className="w-3 h-3 rounded-[3px]" 
+                        style={{ 
+                          background: activeIndex % 6 === 0 ? '#e1306c' : activeIndex % 5 === 0 ? '#800080' : activeIndex % 3 === 0 ? '#4a154b' : '#1e293b' 
+                        }} 
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-center items-center gap-4 text-xs font-bold text-slate-400 mt-6">
+            <span>Less</span>
+            <div className="flex gap-1">
+              {['#1e293b', '#4a154b', '#800080', '#c13584', '#e1306c'].map(c => (
+                <div key={c} className="w-3 h-3 rounded-[3px]" style={{ background: c }} />
+              ))}
+            </div>
+            <span>More</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. LEADERBOARD & GAMIFICATION SECTION */}
+      <section className="relative z-10 py-32 px-6 bg-white/20 backdrop-blur-md border-y border-white/40">
+        <div className="max-w-4xl mx-auto text-center">
+          <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Leaderboard</h4>
+          <h2 className="text-4xl md:text-5xl font-black text-[#1E1B4B] mb-6">Gamified Skill Rankings</h2>
+          <p className="text-slate-500 max-w-xl mx-auto font-medium mb-12">Level up and earn experience points to unlock badges and rank on the global leaderboard.</p>
+
+          <div className="bg-slate-950 rounded-[2.5rem] border border-slate-800 shadow-2xl p-8 space-y-4 text-left">
+            <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3 border-b border-slate-800">
+              <span>Student Profile</span>
+              <div className="flex gap-16">
+                <span>Streak</span>
+                <span>XP Points</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {topStudents.map((st, sIdx) => (
+                <div key={sIdx} className="flex justify-between items-center bg-slate-900/50 p-4 rounded-2xl border border-slate-800 hover:border-pink-500/20 transition-all">
+                  <div className="flex items-center gap-3">
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${
+                      sIdx === 0 ? 'bg-yellow-500 text-slate-950' : sIdx === 1 ? 'bg-slate-300 text-slate-950' : 'bg-slate-850 text-slate-300'
+                    }`}>
+                      {sIdx + 1}
+                    </span>
+                    <div>
+                      <p className="text-xs font-black text-white">{st.name}</p>
+                      <p className="text-[9px] font-black text-pink-500 uppercase tracking-widest">{st.rank}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-12 text-xs font-bold text-slate-300">
+                    <span className="text-orange-400 font-black">{st.streak} Days</span>
+                    <span className="text-white font-black">{st.xp.toLocaleString()} XP</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. CERTIFICATIONS SECTION */}
+      <section className="relative z-10 py-32 px-6">
+        <div className="max-w-5xl mx-auto text-center">
+          <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Career Acceleration</h4>
+          <h2 className="text-4xl md:text-5xl font-black text-[#1E1B4B] mb-6">AI-Verified Industry Certifications</h2>
+          <p className="text-slate-500 max-w-xl mx-auto font-medium mb-16">Get credentials recognized by our global partner network.</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* Certificate Template Card */}
+            <div className="bg-slate-950 p-8 rounded-[2.5rem] border border-slate-800 text-left shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="flex justify-between items-start mb-10">
+                <span className="w-12 h-12 bg-pink-600/10 border border-pink-500/20 text-pink-500 rounded-2xl flex items-center justify-center font-black">
+                  <BadgeCheck size={28} />
+                </span>
+                <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-right">Certificate ID: SK-8842-X</span>
+              </div>
+              <h3 className="text-lg font-black text-white leading-none">John Doe</h3>
+              <p className="text-[10px] text-pink-400 font-black uppercase tracking-widest mt-1">Full-Stack Web Development</p>
+              <div className="border-t border-slate-800/80 my-6 pt-6 flex justify-between items-end">
+                <div>
+                  <p className="text-[8px] text-slate-500 font-black uppercase">Verified By</p>
+                  <p className="text-xs font-black text-white">SkillStation AI Academy</p>
+                </div>
+                <div className="w-10 h-10 bg-white p-1 rounded-lg">
+                  {/* Mock QR Code representation */}
+                  <div className="w-full h-full bg-slate-950 rounded" />
+                </div>
+              </div>
+            </div>
+
+            {/* Explanatory insights list */}
+            <div className="space-y-6 text-left">
+              <div className="flex gap-4">
+                <span className="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-500 flex items-center justify-center shrink-0">
+                  <FileCheck size={20} />
+                </span>
+                <div>
+                  <h4 className="text-base font-black text-slate-900">Cryptographically Secured Credentials</h4>
+                  <p className="text-sm text-slate-500 font-medium">Verify certificates instantly with custom QR codes mapped directly to student records.</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <span className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-500 flex items-center justify-center shrink-0">
+                  <Brain size={20} />
+                </span>
+                <div>
+                  <h4 className="text-base font-black text-slate-900">Integrated Employability Analytics</h4>
+                  <p className="text-sm text-slate-500 font-medium">Certificates display your skill metrics breakdowns compiled directly from your code submissions.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. TESTIMONIALS */}
+      <section className="relative z-10 py-32 px-6 bg-white/20 backdrop-blur-md border-y border-white/40">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Testimonials</h4>
+            <h2 className="text-4xl md:text-5xl font-black text-[#1E1B4B] mb-6">Student Success Stories</h2>
+            <p className="text-slate-500 max-w-xl mx-auto font-medium">Hear how SkillStation helped developers land placements at global tech teams.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { 
+                text: "The Monaco workspace environment feels exactly like coding locally. The AI Proctor verification took under 15 seconds to set up, and I got my certificate within minutes of completing my exam.", 
+                author: "Basheer Ahmed", 
+                role: "Frontend Engineer, TechCorp", 
+                emoji: "👨‍💻" 
+              },
+              { 
+                text: "The annual productivity heatmap really motivated me to keep my daily coding streaks going. Tracking my weekly progress charts built consistency that helped me clear placement interviews.", 
+                author: "Jessica Mercer", 
+                role: "Backend Architect, Google Labs", 
+                emoji: "👩‍💻" 
+              },
+              { 
+                text: "Highly recommended for college placements. Having my skill competency radar mapped directly to my certified profile got me shortlisted for recruitment rounds immediately.", 
+                author: "Ananya Sen", 
+                role: "Software Developer, Microsoft", 
+                emoji: "👩‍🎓" 
+              }
+            ].map((t, i) => (
+              <div key={i} className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+                <p className="text-sm text-slate-600 leading-relaxed font-bold italic">"{t.text}"</p>
+                <div className="flex items-center gap-3 mt-8">
+                  <span className="text-2xl">{t.emoji}</span>
+                  <div>
+                    <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">{t.author}</h4>
+                    <p className="text-[10px] font-black text-pink-500 uppercase tracking-widest">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 10. COURSES SECTION */}
+      <section className="relative z-10 py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
             <div>
               <h2 className="text-4xl md:text-5xl font-black text-[#1E1B4B] mb-6">Learn From The Best</h2>
               <p className="text-slate-500 max-w-xl font-medium">Hand-picked courses to accelerate your career growth.</p>
             </div>
-            <button className="px-8 py-4 bg-white border border-slate-200 rounded-full font-black text-slate-900 hover:bg-slate-50 transition-all flex items-center gap-2">
+            <Link to="/courses" className="px-8 py-4 bg-white border border-slate-200 rounded-full font-black text-slate-900 hover:bg-slate-50 transition-all flex items-center gap-2">
               Browse All <ChevronRight size={18} />
-            </button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {courses.map((course, i) => (
+            {[
+              { title: 'Front End Web Development', category: 'Web Development', level: 'INTERMEDIATE', img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&q=80&w=800' },
+              { title: 'Back End Web Development', category: 'Web Development', level: 'INTERMEDIATE', img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800' },
+              { title: 'Generative AI', category: 'Artificial Intelligence', level: 'INTERMEDIATE', img: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800' },
+            ].map((course, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -242,9 +646,9 @@ const LandingPage = () => {
                   <h3 className="text-xl font-black text-slate-900 mb-4 group-hover:text-pink-500 transition-colors">{course.title}</h3>
                   <div className="flex items-center justify-between mt-8">
                     <span className="text-2xl font-black text-pink-500">Free</span>
-                    <button className="px-6 py-3 bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white rounded-2xl font-black text-xs hover:shadow-lg hover:shadow-pink-500/20 transition-all">
+                    <Link to="/register" className="px-6 py-3 bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white rounded-2xl font-black text-xs hover:shadow-lg hover:shadow-pink-500/20 transition-all">
                       Enroll Now
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </motion.div>
@@ -253,8 +657,28 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Footer Placeholder */}
-      <footer className="relative z-10 py-20 px-6 border-t border-slate-100 text-center">
+      {/* 11. FINAL CTA SECTION */}
+      <section className="relative z-10 py-32 px-6 bg-white/20 backdrop-blur-md border-t border-white/40 text-center">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <h2 className="text-4xl md:text-6xl font-black text-[#1E1B4B] tracking-tight leading-none">
+            🚀 Start Learning with AI Today
+          </h2>
+          <p className="text-slate-600 max-w-xl mx-auto font-bold text-base md:text-lg">
+            Build consistency, pass security verified proctored exams, and unlock certified skills recognized globally.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <Link to="/register" className="px-10 py-4 bg-gradient-to-r from-pink-600 to-violet-600 text-white rounded-full font-black text-base shadow-[0_10px_30px_rgba(236,72,153,0.3)] flex items-center gap-2 hover:shadow-xl hover:shadow-pink-500/40 hover:-translate-y-1 transition-all">
+              Start Free <ArrowRight size={18} />
+            </Link>
+            <Link to="/courses" className="px-10 py-4 bg-white border border-slate-200 text-slate-800 rounded-full font-black text-base hover:bg-slate-50 hover:-translate-y-1 transition-all">
+              Explore Courses
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative z-10 py-20 px-6 border-t border-slate-100 text-center bg-transparent">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500 to-violet-600 flex items-center justify-center text-white shadow-xl mx-auto mb-8">
           <Sparkles size={24} />
         </div>

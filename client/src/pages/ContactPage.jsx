@@ -4,7 +4,7 @@ import { Mail, Phone, MapPin, Send, MessageSquare, Twitter, Linkedin, Github } f
 
 const ContactPage = () => {
   return (
-    <div className="pt-32 pb-20 bg-gray-50 min-h-screen">
+    <div className="pt-32 pb-20 bg-transparent min-h-screen">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-20">

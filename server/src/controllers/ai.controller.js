@@ -20,9 +20,26 @@ const { prisma } = require('../config/db');
  */
 const chat = asyncHandler(async (req, res) => {
   const { message, history } = req.body;
+  const userId = req.user?.id || req.user?.userId;
+
+  console.log(`[AI Chat DEBUG] Request received from User ID: ${userId}, Email: ${req.user?.email || 'N/A'}`);
+  console.log('[AI Chat DEBUG] Message snippet:', message ? message.slice(0, 50) : 'none');
+  console.log('[AI Chat DEBUG] History length:', history?.length || 0);
+
+  if (!userId) {
+    console.warn('[AI Chat DEBUG] Unauthorized access attempt (user context missing)');
+    return res.status(401).json({
+      status: 'error',
+      message: 'Unauthorized: User context is missing.'
+    });
+  }
 
   if (!message) {
-    throw new ApiError(400, 'Message is required');
+    console.warn('[AI Chat DEBUG] Bad Request: Message is required');
+    return res.status(400).json({
+      status: 'error',
+      message: 'Message is required'
+    });
   }
 
   const systemPrompt = `
@@ -31,6 +48,7 @@ const chat = asyncHandler(async (req, res) => {
   `;
 
   try {
+    console.log('[AI Chat DEBUG] Calling Groq API...');
     const chatCompletion = await groq.chat.completions.create({
       messages: [
         { role: "system", content: systemPrompt },
@@ -46,12 +64,14 @@ const chat = asyncHandler(async (req, res) => {
     });
 
     const reply = chatCompletion.choices[0]?.message?.content || "";
+    console.log('[AI Chat DEBUG] Groq API success. Reply length:', reply.length);
 
     res.status(200).json({
       status: 'success',
       reply
     });
   } catch (error) {
+    console.error('[AI Chat DEBUG] Groq API Error:', error.message);
     const statusCode = error.status || 500;
     res.status(statusCode).json({
       status: 'error',
@@ -65,19 +85,34 @@ const chat = asyncHandler(async (req, res) => {
  * Generate AI Resume content based on student profile
  */
 const generateResume = asyncHandler(async (req, res) => {
+  const userId = req.user?.id || req.user?.userId;
+  console.log(`[AI Resume DEBUG] Request received from User ID: ${userId}, Email: ${req.user?.email || 'N/A'}`);
+
+  if (!userId) {
+    console.warn('[AI Resume DEBUG] Unauthorized access attempt (user context missing)');
+    return res.status(401).json({
+      status: 'error',
+      message: 'Unauthorized: User context is missing.'
+    });
+  }
+
   const student = await prisma.student.findUnique({
-    where: { userId: req.user.id },
+    where: { userId: userId },
     include: {
       user: true,
       education: true,
-      projects: true,
-      skills: true,
-      certifications: true
+      project: true,
+      skill: true,
+      certification: true
     }
   });
 
   if (!student) {
-    throw new ApiError(404, 'Student profile not found');
+    console.warn(`[AI Resume DEBUG] Student profile not found for userId: ${userId}`);
+    return res.status(404).json({
+      status: 'error',
+      message: 'Student profile not found'
+    });
   }
 
   const prompt = `
@@ -85,10 +120,10 @@ const generateResume = asyncHandler(async (req, res) => {
     Name: ${student.user.name}
     Headline: ${student.headline || 'Aspiring Professional'}
     Bio: ${student.user.bio}
-    Skills: ${student.skills.map(s => s.name).join(', ')}
+    Skills: ${student.skill.map(s => s.name).join(', ')}
     Education: ${student.education.map(e => `${e.degree} from ${e.institution} (${e.startYear}-${e.endYear})`).join('; ')}
-    Projects: ${student.projects.map(p => `${p.title}: ${p.description}`).join('; ')}
-    Certifications: ${student.certifications.map(c => c.title).join(', ')}
+    Projects: ${student.project.map(p => `${p.title}: ${p.description}`).join('; ')}
+    Certifications: ${student.certification.map(c => c.title).join(', ')}
 
     Output should be in professional Markdown format.
     Include Sections: SUMMARY, EXPERIENCE (use projects if work exp is empty), EDUCATION, SKILLS, CERTIFICATIONS.
@@ -96,6 +131,7 @@ const generateResume = asyncHandler(async (req, res) => {
   `;
 
   try {
+    console.log('[AI Resume DEBUG] Calling Groq API for resume generation...');
     const completion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
       model: "llama-3.3-70b-versatile",
@@ -103,8 +139,10 @@ const generateResume = asyncHandler(async (req, res) => {
     });
 
     const resumeMarkdown = completion.choices[0]?.message?.content || "";
+    console.log('[AI Resume DEBUG] Groq API success. Resume length:', resumeMarkdown.length);
 
     // Save resume data and update ATS score (randomized for demo)
+    console.log('[AI Resume DEBUG] Saving resume to database and updating ATS score...');
     await prisma.student.update({
       where: { id: student.id },
       data: {
@@ -112,13 +150,18 @@ const generateResume = asyncHandler(async (req, res) => {
         atsScore: Math.floor(Math.random() * (95 - 75 + 1) + 75) // 75-95
       }
     });
+    console.log('[AI Resume DEBUG] Resume database update complete.');
 
-    res.json({
+    res.status(200).json({
       status: 'success',
       resume: resumeMarkdown
     });
   } catch (error) {
-    throw new ApiError(500, 'AI Resume generation failed: ' + error.message);
+    console.error('[AI Resume DEBUG] Groq API or Database Error:', error.message);
+    res.status(500).json({
+      status: 'error',
+      message: 'AI Resume generation failed: ' + error.message
+    });
   }
 });
 

@@ -29,12 +29,15 @@ model assignment {
   order       Int                   @default(0)
   xpReward    Int                   @default(50)
   difficulty  assignment_difficulty @default(BEGINNER)
+  status      String                @default("DRAFT")
   courseId    String
   moduleId    String?
   course      course                @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Assignment_courseId_fkey")
   module      module?               @relation(fields: [moduleId], references: [id], map: "Assignment_moduleId_fkey")
   question    question[]
   submission  submission[]
+  proctoring_session proctoring_session[]
+  proctoring_violation proctoring_violation[]
 
   @@index([courseId], map: "Assignment_courseId_idx")
   @@index([moduleId], map: "Assignment_moduleId_fkey")
@@ -120,6 +123,7 @@ model course {
   enrollment     enrollment[]
   exam           exam[]
   module         module[]
+  student_progress student_progress[]
 
   @@index([category], map: "Course_category_idx")
   @@index([difficulty], map: "Course_difficulty_idx")
@@ -474,6 +478,9 @@ model student {
   userbadge      userbadge[]
   attendance     attendance[]
   dailygoal      dailygoal[]
+  student_progress student_progress[]
+  proctoring_session proctoring_session[]
+  proctoring_violation proctoring_violation[]
 
   @@index([level], map: "Student_level_idx")
   @@index([xp], map: "Student_xp_idx")
@@ -588,6 +595,20 @@ model dailygoal {
   student   student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
+model student_progress {
+  id                  String   @id @default(cuid())
+  studentId           String   @map("student_id")
+  courseId            String   @map("course_id")
+  unlockedLevels      Json     @map("unlocked_levels")
+  completedLevels     Json     @map("completed_levels")
+  progressPercentage  Float    @default(0) @map("progress_percentage")
+  student             student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course              course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId])
+}
+
+
 enum lesson_type {
   VIDEO
   PDF
@@ -631,4 +652,36 @@ enum course_status {
   PUBLISHED
   ARCHIVED
   PENDING_REVIEW
+}
+
+model proctoring_session {
+  id                 String      @id @default(cuid())
+  studentId          String      @map("student_id")
+  assignmentId       String      @map("assignment_id")
+  sessionToken       String      @map("session_token")
+  deviceFingerprint  String      @map("device_fingerprint") @db.Text
+  screenShareActive  Boolean     @default(true) @map("screen_share_active")
+  fullscreenActive   Boolean     @default(true) @map("fullscreen_active")
+  startedAt          DateTime    @default(now()) @map("started_at")
+  endedAt            DateTime?   @map("ended_at")
+  student            student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignment         assignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([assignmentId])
+}
+
+model proctoring_violation {
+  id            String      @id @default(cuid())
+  studentId     String      @map("student_id")
+  assignmentId  String      @map("assignment_id")
+  type          String
+  severity      String
+  metadata      Json?
+  timestamp     DateTime    @default(now())
+  student       student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  assignment    assignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([assignmentId])
 }

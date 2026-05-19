@@ -38,7 +38,7 @@ const Navbar = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="bg-white/90 backdrop-blur-xl rounded-full border border-orange-500/80 shadow-[0_10px_30px_rgba(255,87,34,0.1)] flex items-center px-4 py-1.5 sm:px-8 gap-10 sm:gap-20 relative"
+        className="bg-white/35 backdrop-blur-2xl rounded-full border border-white/40 shadow-[0_10px_40px_rgba(236,72,153,0.06)] flex items-center px-4 py-1.5 sm:px-8 gap-10 sm:gap-20 relative hover:border-white/60 transition-all duration-500"
       >
         {/* LEFT: Compact Logo branding */}
         <div className="flex-shrink-0">
@@ -112,7 +112,7 @@ const Navbar = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute top-full left-0 right-0 mt-3 mx-4 bg-white/98 backdrop-blur-3xl rounded-[2rem] border border-orange-500/40 shadow-2xl p-6 flex flex-col gap-4 lg:hidden z-[60]"
+              className="absolute top-full left-0 right-0 mt-3 mx-4 bg-white/35 backdrop-blur-3xl rounded-[2rem] border border-white/40 shadow-2xl p-6 flex flex-col gap-4 lg:hidden z-[60]"
             >
               {navLinks.map((link) => (
                 <Link 

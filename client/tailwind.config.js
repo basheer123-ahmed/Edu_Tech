@@ -9,32 +9,58 @@ export default {
     extend: {
       colors: {
         skillstation: {
-          bg: "#F3EAFD",
-          secondary: "#EBDDFF",
+          bg: "#FFF8FC",
+          secondary: "#FAF5FF",
           card: "#FFFFFF",
-          border: "#DCC7FF",
-          primary: "#9333EA",
-          accent: "#C084FC",
-          hover: "#E9D7FF",
+          border: "rgba(255,255,255,0.45)",
+          primary: "#A855F7",
+          accent: "#F472B6",
+          hover: "#FFF0F8",
           text: {
-            primary: "#1E1B4B",
+            primary: "#1F2937",
             secondary: "#6B7280"
           }
         },
         primary: {
-          DEFAULT: "#9333EA",
-          hover: "#7E22CE",
-          light: "#F3EAFD",
+          DEFAULT: "#A855F7",
+          hover: "#9333EA",
+          light: "#FFF8FC",
         },
         secondary: {
-          DEFAULT: "#1E1B4B",
-          light: "#312E81",
-          lighter: "#4338CA",
+          DEFAULT: "#1F2937",
+          light: "#374151",
+          lighter: "#4B5563",
         },
         glass: {
-          light: 'rgba(255, 255, 255, 0.75)',
-          dark: 'rgba(15, 23, 42, 0.75)',
-          sidebar: 'rgba(255, 255, 255, 0.85)',
+          light: 'rgba(255, 255, 255, 0.65)',
+          dark: 'rgba(15, 23, 42, 0.65)',
+          sidebar: 'rgba(255, 255, 255, 0.18)',
+        },
+        violet: {
+          50: '#FFF5FA',
+          100: '#FDF2F8',
+          200: '#FBCFE8',
+          300: '#F472B6',
+          400: '#EC4899',
+          500: '#D946EF',
+          600: '#A855F7',
+          700: '#9333EA',
+          800: '#7E22CE',
+          900: '#6B21A8',
+          950: '#4C1D95',
+        },
+        purple: {
+          50: '#FFF5FA',
+          100: '#FDF2F8',
+          200: '#FBCFE8',
+          300: '#F472B6',
+          400: '#EC4899',
+          500: '#D946EF',
+          600: '#A855F7',
+          700: '#9333EA',
+          800: '#7E22CE',
+          900: '#6B21A8',
+          950: '#4C1D95',
         }
       },
       animation: {
@@ -85,9 +111,9 @@ export default {
         poppins: ['Poppins', 'sans-serif'],
       },
       backgroundImage: {
-        'premium-gradient': 'linear-gradient(to right, #9333EA, #EC4899)',
+        'premium-gradient': 'linear-gradient(135deg, #F472B6, #F43F5E)',
         'glass-gradient': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))',
-        'soft-lavender': 'linear-gradient(135deg, #F3EAFD 0%, #EBDDFF 100%)',
+        'soft-lavender': 'linear-gradient(135deg, #FFF0F6 0%, #FFF8FA 50%, #F5EEF6 100%)',
       }
     },
   },

@@ -365,6 +365,107 @@ const getRecommendations = asyncHandler(async (req, res) => {
   res.json({ recommendations: recs, suggestedCourses });
 });
 
+/**
+ * POST /api/student/courses/enroll
+ * Enroll student in a course and initialize progress
+ */
+const enrollStudentCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.body;
+  if (!courseId) throw new ApiError(400, 'courseId is required');
+
+  const student = await getStudent(req.user.id);
+
+  // Validate course exists
+  const courseObj = await prisma.course.findUnique({
+    where: { id: courseId }
+  });
+  if (!courseObj) throw new ApiError(404, 'Course not found');
+
+  // Prevent duplicate enrollment
+  const existingEnrollment = await prisma.enrollment.findFirst({
+    where: { studentId: student.id, courseId }
+  });
+  if (existingEnrollment) {
+    throw new ApiError(400, 'Already enrolled in this course');
+  }
+
+  // Create enrollment, student_progress, and courseprogress inside a transaction
+  const uuid = require('uuid');
+  const result = await prisma.$transaction(async (tx) => {
+    const enrollment = await tx.enrollment.create({
+      data: {
+        id: uuid.v4(),
+        studentId: student.id,
+        courseId
+      }
+    });
+
+    const studentProgress = await tx.student_progress.create({
+      data: {
+        id: uuid.v4(),
+        studentId: student.id,
+        courseId,
+        unlockedLevels: JSON.stringify([1]),
+        completedLevels: JSON.stringify([]),
+        progressPercentage: 0
+      }
+    });
+
+    // Create standard courseprogress for lessons integration compatibility
+    const cp = await tx.courseprogress.create({
+      data: {
+        id: uuid.v4(),
+        studentId: student.id,
+        courseId,
+        percentage: 0,
+        isCompleted: false,
+        lastAccessedAt: new Date()
+      }
+    });
+
+    return { enrollment, studentProgress };
+  });
+
+  res.status(201).json({
+    message: 'Enrolled successfully',
+    enrollment: result.enrollment,
+    studentProgress: result.studentProgress
+  });
+});
+
+/**
+ * GET /api/student/courses/stats
+ * Stats for courses (Available, Enrolled, Completed, Certificates) plus course lists
+ */
+const getStudentCourseStats = asyncHandler(async (req, res) => {
+  const student = await getStudent(req.user.id);
+
+  const [available, enrollments, courseProgresses, certificates] = await Promise.all([
+    prisma.course.count({ where: { status: 'PUBLISHED' } }),
+    prisma.enrollment.findMany({
+      where: { studentId: student.id },
+      select: { courseId: true }
+    }),
+    prisma.courseprogress.findMany({
+      where: { studentId: student.id },
+      select: { courseId: true, isCompleted: true }
+    }),
+    prisma.certificate.count({ where: { studentId: student.id } })
+  ]);
+
+  const enrolledCourseIds = enrollments.map(e => e.courseId);
+  const completedCourseIds = courseProgresses.filter(cp => cp.isCompleted).map(cp => cp.courseId);
+
+  res.json({
+    available,
+    enrolled: enrolledCourseIds.length,
+    completed: completedCourseIds.length,
+    certificates,
+    enrolledCourseIds,
+    completedCourseIds
+  });
+});
+
 module.exports = {
   getStudentDashboard,
   getStudentProgress,
@@ -373,5 +474,7 @@ module.exports = {
   getSkills,
   getAnalytics,
   getAttendance,
-  getRecommendations
+  getRecommendations,
+  enrollStudentCourse,
+  getStudentCourseStats
 };
