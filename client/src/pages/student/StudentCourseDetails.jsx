@@ -328,7 +328,7 @@ const StudentCourseDetails = () => {
                             <div>
                               {lvl.isUnlocked ? (
                                 <Link 
-                                  to={`/dashboard/student/assignments/${course.id}/level/${lvl.id}`}
+                                  to={lvl.order === 4 ? `/final-exam/${course.id}/${lvl.id}` : `/assignments/${course.id}/level/${lvl.id}`}
                                   className="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-violet-600 transition-colors uppercase tracking-wider block text-center"
                                 >
                                   Enter Workspace
@@ -401,7 +401,7 @@ const StudentCourseDetails = () => {
                     </span>
                   </div>
                   <Link 
-                    to={`/dashboard/student/assignments/${course.id}`}
+                    to={`/learn/${course.id}`}
                     className="w-full py-4 bg-slate-900 hover:bg-violet-600 text-white rounded-2xl font-black text-sm tracking-wide flex items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-slate-950/10 hover:-translate-y-0.5"
                   >
                     <Monitor size={18} /> Continue Learning
@@ -431,35 +431,35 @@ const StudentCourseDetails = () => {
             </div>
 
             {/* AI Proctoring System Warning Card */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 border border-red-200/50 shadow-lg shadow-red-500/5 space-y-4 relative overflow-hidden">
+            <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 border border-amber-200/50 shadow-lg shadow-amber-500/5 space-y-4 relative overflow-hidden">
               
               {/* Top Warning Strip */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldAlert size={18} className="text-red-500" />
-                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-700">AI Proctoring Rules</span>
+                  <ShieldAlert size={18} className="text-amber-600" />
+                  <span className="text-[11px] font-black uppercase tracking-widest text-slate-700">Exam Protocols</span>
                 </div>
                 {/* Active Monitor simulation */}
-                <div className="flex items-center gap-1.5 bg-red-50 px-2 py-1 rounded-full border border-red-100">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
-                  <span className="text-[9px] font-black uppercase text-red-600">Active Scan</span>
+                <div className="flex items-center gap-1.5 bg-amber-50 px-2 py-1 rounded-full border border-amber-100">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                  <span className="text-[9px] font-black uppercase text-amber-700">Exam Mode</span>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <p className="text-slate-500 text-xs font-bold leading-relaxed">
-                  To maintain integrity and fairness, assignments in this course enforce continuous proctored evaluations.
+                  Regular homework levels are completely proctor-free. Proctoring checks are strictly enforced <span className="text-pink-600">only</span> on the Final Comprehensive Exam.
                 </p>
 
                 <div className="space-y-2 pt-2">
                   {[
-                    { text: 'Webcam monitor will be active', desc: 'Face visibility & focus tracking' },
-                    { text: 'Microphone monitor will be active', desc: 'Ambient sound monitoring' },
-                    { text: 'Tab switching will be restricted', desc: 'Immediate alert on window changes' },
-                    { text: 'AI Face detection will track focus', desc: 'Flags suspicious posture/multiple faces' },
+                    { text: 'Webcam active on Final Exam', desc: 'Continuous face verification scan' },
+                    { text: 'Microphone active on Final Exam', desc: 'Continuous ambient sound monitoring' },
+                    { text: 'Anti-tab bypass locks on Exam', desc: 'Disqualification warning on window changes' },
+                    { text: 'Fully proctorless homeworks', desc: 'No system checks for practice levels' },
                   ].map((rule, idx) => (
                     <div key={idx} className="flex gap-3 items-start">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
                       <div>
                         <p className="text-[11px] font-black text-slate-700 leading-tight">{rule.text}</p>
                         <p className="text-[9px] text-slate-400 font-bold mt-0.5">{rule.desc}</p>

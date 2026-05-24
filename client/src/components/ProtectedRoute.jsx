@@ -17,6 +17,11 @@ const ProtectedRoute = ({ children, role }) => {
     return <Navigate to="/login" />;
   }
 
+  // Force password reset redirect
+  if (user.mustResetPassword) {
+    return <Navigate to="/force-reset-password" />;
+  }
+
   if (role && user.role !== role) {
     return <Navigate to="/" />;
   }

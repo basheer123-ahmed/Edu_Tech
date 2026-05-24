@@ -241,7 +241,7 @@ const StudentCourses = () => {
                       </Link>
                     ) : stats.enrolledCourseIds.includes(course.id) ? (
                       <Link 
-                        to={`/dashboard/student/assignments/${course.id}`}
+                        to={`/learn/${course.id}`}
                         className="w-full py-4 bg-violet-600 text-white rounded-2xl font-black text-sm tracking-wide flex items-center justify-center gap-3 transition-all duration-300 hover:bg-violet-700 hover:shadow-xl hover:shadow-violet-200/20 hover:-translate-y-1 active:scale-95"
                       >
                         ✅ Continue Learning <ChevronRight size={18} />

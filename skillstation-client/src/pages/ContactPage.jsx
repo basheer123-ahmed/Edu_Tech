@@ -9,7 +9,7 @@ const ContactPage = () => {
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-20">
           <h1 className="text-5xl font-bold text-secondary mb-6">Get in <span className="text-primary">Touch</span></h1>
-          <p className="text-xl text-gray-500">Have questions? We're here to help you navigate your journey with SkillStation.</p>
+          <p className="text-xl text-gray-500">Have questions? We're here to help you navigate your journey with SkilStation.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
@@ -22,7 +22,7 @@ const ContactPage = () => {
               <div>
                 <h3 className="text-2xl font-bold text-secondary mb-2">Email Us</h3>
                 <p className="text-gray-500 mb-2">Our team is here to help with any queries.</p>
-                <a href="mailto:support@skillstation.com" className="text-primary font-bold text-lg hover:underline">support@skillstation.com</a>
+                <a href="mailto:support@skilstation.com" className="text-primary font-bold text-lg hover:underline">support@skilstation.com</a>
               </div>
             </div>
 

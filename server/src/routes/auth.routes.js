@@ -11,5 +11,6 @@ router.post('/register', validate(authValidation.register), authController.regis
 router.post('/login', validate(authValidation.login), authController.login);
 router.get('/me', authenticate, authController.getMe);
 router.post('/logout', authController.logout);
+router.post('/force-reset-password', authenticate, authController.forceResetPassword);
 
 module.exports = router;

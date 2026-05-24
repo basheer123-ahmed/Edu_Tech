@@ -16,7 +16,7 @@ const AboutPage = () => {
             Empowering the Next Generation of <span className="text-primary">Global Talent</span>
           </motion.h1>
           <p className="text-xl text-gray-500 leading-relaxed">
-            SkillStation was founded in 2024 with a simple mission: to bridge the gap between education and employment. 
+            SkilStation was founded in 2024 with a simple mission: to bridge the gap between education and employment. 
             We use cutting-edge AI to help students discover their potential, master high-demand skills, and connect with 
             the world's most innovative companies.
           </p>

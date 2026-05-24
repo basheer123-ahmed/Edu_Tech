@@ -74,7 +74,7 @@ const AdminDashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-900 mb-2">Admin Command Center 🛡️</h1>
-          <p className="text-slate-500 font-medium">Enterprise overview of the SkillStation ecosystem.</p>
+          <p className="text-slate-500 font-medium">Enterprise overview of the SkilStation ecosystem.</p>
         </div>
         <div className="flex items-center gap-3">
           <button className="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition shadow-sm flex items-center gap-2">

@@ -23,15 +23,15 @@ const getMyProfile = asyncHandler(async (req, res) => {
         }
       },
       education: { orderBy: { endYear: 'desc' } },
-      projects: { orderBy: { createdAt: 'desc' } },
-      certifications: { orderBy: { issueDate: 'desc' } },
-      skills: true,
-      documents: true,
+      project: { orderBy: { createdAt: 'desc' } },
+      certification: { orderBy: { issueDate: 'desc' } },
+      skill: true,
+      document: true,
       _count: {
         select: {
-          enrollments: true,
-          submissions: true,
-          certificates: true
+          enrollment: true,
+          submission: true,
+          certificate: true
         }
       }
     }
@@ -41,7 +41,26 @@ const getMyProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Student profile not found');
   }
 
-  res.json(student);
+  // Normalize singular Prisma relation names → plural keys for frontend compatibility
+  const normalized = {
+    ...student,
+    projects:       student.project        || [],
+    certifications: student.certification  || [],
+    skills:         student.skill          || [],
+    documents:      student.document       || [],
+    _count: {
+      enrollments:  student._count?.enrollment  || 0,
+      submissions:  student._count?.submission  || 0,
+      certificates: student._count?.certificate || 0,
+    },
+    // Remove singular keys to keep response clean
+    project:       undefined,
+    certification: undefined,
+    skill:         undefined,
+    document:      undefined,
+  };
+
+  res.json(normalized);
 });
 
 /**
@@ -228,6 +247,23 @@ const deleteCertification = asyncHandler(async (req, res) => {
   res.json({ message: 'Certification deleted' });
 });
 
+/**
+ * @desc    Update student resume data (multiple resumes, experience, languages, achievements, etc.)
+ * @route   PUT /api/profile/resume-data
+ * @access  Private (Student)
+ */
+const updateResumeData = asyncHandler(async (req, res) => {
+  const { resumeData, atsScore } = req.body;
+  const student = await prisma.student.update({
+    where: { userId: req.user.id },
+    data: {
+      resumeData: resumeData !== undefined ? resumeData : undefined,
+      atsScore: atsScore !== undefined ? atsScore : undefined
+    }
+  });
+  res.json({ message: 'Resume data updated successfully', student });
+});
+
 module.exports = {
   getMyProfile,
   updatePersonalInfo,
@@ -239,5 +275,6 @@ module.exports = {
   deleteProject,
   updateSkills,
   addCertification,
-  deleteCertification
+  deleteCertification,
+  updateResumeData
 };

@@ -43,8 +43,8 @@ const chat = asyncHandler(async (req, res) => {
   }
 
   const systemPrompt = `
-    You are SkillStation AI, a helpful and friendly learning assistant for the SkillStation EdTech platform.
-    SkillStation is a premium AI-powered platform for students, institutions, and companies.
+    You are SkilStation AI, a helpful and friendly learning assistant for the SkilStation EdTech platform.
+    SkilStation is a premium AI-powered platform for students, institutions, and companies.
   `;
 
   try {

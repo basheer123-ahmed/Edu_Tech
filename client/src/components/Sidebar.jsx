@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSidebar } from '../context/SidebarContext';
 
 const Sidebar = ({ navGroups, role, handleLogout }) => {
@@ -12,18 +12,16 @@ const Sidebar = ({ navGroups, role, handleLogout }) => {
     <div className="flex flex-col h-full bg-white/80 backdrop-blur-2xl border-r border-slate-200/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
       {/* Logo Section */}
       <div className={`h-20 flex items-center ${isCollapsed ? 'justify-center px-2' : 'px-6'} gap-3 border-b border-slate-100 shrink-0`}>
-        <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-violet-500/30 shrink-0">
-          <Sparkles size={20} className="text-white" />
-        </div>
+        <img src="/logo.png" alt="SkilStation Logo" className="w-10 h-10 object-contain shrink-0" />
         <AnimatePresence>
           {!isCollapsed && (
             <motion.span 
               initial={{ opacity: 0, x: -10 }} 
               animate={{ opacity: 1, x: 0 }} 
               exit={{ opacity: 0, x: -10 }}
-              className="font-black text-xl text-slate-900 whitespace-nowrap tracking-tight"
+              className="font-black text-xl whitespace-nowrap tracking-tight"
             >
-              SkillStation
+              <span className="text-blue-500">Skil</span><span className="text-orange-500">Station</span>
             </motion.span>
           )}
         </AnimatePresence>

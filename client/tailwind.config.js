@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        skillstation: {
+        skilstation: {
           bg: "#FFF8FC",
           secondary: "#FAF5FF",
           card: "#FFFFFF",

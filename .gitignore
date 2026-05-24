@@ -43,3 +43,6 @@ Thumbs.db
 # Database / Prisma
 server/prisma/dev.db
 server/prisma/dev.db-journal
+
+# Uploads
+server/uploads/

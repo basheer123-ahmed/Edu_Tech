@@ -6,27 +6,44 @@ import { Send, X, Sparkles, MessageCircle } from 'lucide-react';
 import axios from 'axios';
 import * as THREE from 'three';
 
-// --- Premium Pixar-Style 3D SkillBot (100% Code-Based) ---
-const SkillBot = ({ size = 1.1 }) => {
+// --- Premium Pixar-Style 3D SkilBot (100% Code-Based) ---
+const SkilBot = ({ size = 1.1, isHovered = false }) => {
   const headRef = useRef();
   const bodyRef = useRef();
   const rightArmRef = useRef();
+  const leftArmRef = useRef();
   const eyesRef = useRef();
   
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
+    
+    // Slight body float and idle breathing
     if (bodyRef.current) {
       bodyRef.current.position.y = Math.sin(t * 1.5) * 0.12;
-      bodyRef.current.rotation.z = Math.sin(t * 0.6) * 0.08;
+      bodyRef.current.rotation.z = Math.sin(t * 0.6) * 0.05;
     }
+    
+    // Head bobbing & tracking rotation
     if (headRef.current) {
-      headRef.current.rotation.y = Math.sin(t * 0.4) * 0.25;
-      headRef.current.rotation.x = Math.cos(t * 0.4) * 0.1;
+      headRef.current.position.y = 0.65 + Math.sin(t * 1.5) * 0.02;
+      headRef.current.rotation.y = Math.sin(t * 0.4) * 0.15;
+      headRef.current.rotation.x = Math.cos(t * 0.4) * 0.06;
     }
+
+    // Interactive hand animations
+    const waveSpeed = isHovered ? 6.5 : 1.5;
+    const waveIntensity = isHovered ? 0.35 : 0.08;
+
     if (rightArmRef.current) {
-      rightArmRef.current.rotation.z = -0.6 + Math.sin(t * 3.5) * 0.6;
-      rightArmRef.current.rotation.x = Math.sin(t * 3.5) * 0.2;
+      // Right arm: moves up and down (waving when hovered)
+      const baseRotZ = Math.PI / 2.5;
+      rightArmRef.current.rotation.z = baseRotZ + Math.sin(t * waveSpeed) * waveIntensity;
+      rightArmRef.current.rotation.x = Math.sin(t * waveSpeed) * (isHovered ? 0.25 : 0.05);
     }
+    
+
+
+    // Eye blinking
     if (eyesRef.current) {
       const blink = Math.sin(t * 5) > 0.98 ? 0.05 : 1;
       eyesRef.current.scale.y = THREE.MathUtils.lerp(eyesRef.current.scale.y, blink, 0.4);
@@ -66,17 +83,18 @@ const SkillBot = ({ size = 1.1 }) => {
       <group ref={rightArmRef} position={[0.6, 0.15, 0]}>
         <mesh rotation={[0, 0, Math.PI / 2.5]}><capsuleGeometry args={[0.07, 0.35, 16, 16]} />{silverMaterial}</mesh>
       </group>
-      <group position={[-0.6, 0.15, 0]}>
+      <group ref={leftArmRef} position={[-0.6, 0.15, 0]}>
         <mesh rotation={[0, 0, -Math.PI / 3]}><capsuleGeometry args={[0.07, 0.35, 16, 16]} />{silverMaterial}</mesh>
       </group>
     </group>
   );
 };
 
-const AIChatWidget = () => {
+const AIChatWidget = ({ position = 'top' }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Beep Boop! 🤖 I am SkillBot. How can I help you today?' }
+    { role: 'assistant', content: 'Beep Boop! 🤖 I am SkilBot. How can I help you today?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -93,7 +111,7 @@ const AIChatWidget = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       setIsLoading(false);
-      setMessages(prev => [...prev, { role: 'assistant', content: "Please log in to chat with SkillBot! 🔒" }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Please log in to chat with SkilBot! 🔒" }]);
       return;
     }
 
@@ -123,41 +141,91 @@ const AIChatWidget = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end pointer-events-none">
+    <div className="relative z-50 flex flex-col items-end pointer-events-auto select-none">
+      {/* Bot Button Trigger - Always visible */}
+      <div 
+        className="relative group cursor-pointer" 
+        onClick={() => setIsOpen(!isOpen)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-12 h-3 bg-pink-200/40 blur-lg rounded-full" />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }} 
+          animate={{ opacity: 1, scale: 1 }} 
+          whileHover={{ scale: 1.08, filter: 'drop-shadow(0 0 10px rgba(244, 114, 182, 0.45))' }} 
+          className="w-16 h-16 relative"
+        >
+           <Canvas camera={{ position: [0, 0, 5], fov: 42 }} gl={{ alpha: true }}>
+              <Suspense fallback={null}>
+                 <Float speed={4} rotationIntensity={0.8} floatIntensity={0.8}>
+                   <SkilBot size={1.25} isHovered={isHovered} />
+                 </Float>
+                 <Environment preset="city" />
+              </Suspense>
+           </Canvas>
+        </motion.div>
+        
+        {/* Help popup - Only visible when closed */}
+        {!isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: position === 'bottom' ? 5 : -5 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 1.2 }} 
+            className={`absolute ${position === 'bottom' ? 'bottom-[100%] mb-1' : 'top-[100%] mt-1'} right-0 px-3 py-1.5 bg-white rounded-2xl shadow-xl border border-slate-100 whitespace-nowrap hidden sm:flex items-center z-50`}
+          >
+             <p className="text-[10px] font-extrabold text-slate-800 tracking-tight">Need help? 👋</p>
+             <svg className={`absolute ${position === 'bottom' ? 'bottom-[-6px] rotate-180' : 'top-[-6px]'} right-[20px] w-3 h-2 fill-white`} viewBox="0 0 12 10"><path d="M6 0 L12 10 L0 10 Z" /></svg>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Chat window dropdown */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 30 }}
+            initial={{ opacity: 0, scale: 0.9, y: position === 'bottom' ? 10 : -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 30 }}
-            className="w-[320px] sm:w-[360px] h-[480px] mb-8 mr-2 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.12)] border border-white/50 flex flex-col overflow-hidden relative pointer-events-auto"
-            style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(40px)' }}
+            exit={{ opacity: 0, scale: 0.9, y: position === 'bottom' ? 10 : -10 }}
+            className={`w-[320px] sm:w-[360px] h-[480px] absolute ${position === 'bottom' ? 'bottom-[110%]' : 'top-[110%]'} right-0 rounded-[2.5rem] shadow-[0_40px_100px_rgba(244,114,182,0.15)] border border-white/80 flex flex-col overflow-hidden z-[9999] pointer-events-auto`}
+            style={{ background: 'rgba(255, 235, 245, 0.90)', backdropFilter: 'blur(40px)' }}
           >
             <div className="absolute inset-0 z-0 opacity-40">
                <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
                   <Suspense fallback={null}>
-                     <SkillBot size={0.7} />
+                     <SkilBot size={0.7} isHovered={false} />
                      <Environment preset="city" />
                      <ContactShadows position={[0, -2.5, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />
                   </Suspense>
                </Canvas>
             </div>
             <div className="relative z-10 flex flex-col h-full">
-               <div className="px-8 pt-8 pb-1 flex justify-between items-start">
-                  <div>
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight leading-none mb-1">SkillBot 🤖</h3>
-                    <div className="flex items-center gap-1.5">
-                       <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active</span>
+               <div className="bg-[#E94D8E] px-5 py-4 flex items-center justify-between shrink-0 shadow-sm border-b border-white/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center shrink-0 shadow-inner text-2xl">
+                      🤖
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-base font-bold text-white tracking-tight leading-none">SkilStation AI Tutor</h3>
+                        <span className="bg-white/25 px-2 py-0.5 rounded-full text-[9px] font-bold text-white">15 COURSES</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                         <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
+                         <span className="text-[11px] font-medium text-white/90">Online — Ready to help</span>
+                      </div>
                     </div>
                   </div>
-                  <button onClick={() => setIsOpen(false)} className="p-2 text-slate-300 hover:text-slate-900 transition-all"><X size={20}/></button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setMessages([{ role: 'assistant', content: 'Beep Boop! 🤖 I am SkilBot. How can I help you today?' }])} className="px-3 py-1 border border-white/40 rounded-full text-[10px] font-bold text-white hover:bg-white/20 transition-colors">CLEAR</button>
+                    <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white transition-colors p-1"><X size={18}/></button>
+                  </div>
                </div>
-               <div ref={scrollRef} className="flex-1 overflow-y-auto px-8 py-4 space-y-4 custom-scrollbar">
+               <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-4 space-y-4 custom-scrollbar">
                   {messages.map((msg, idx) => (
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-[12.5px] font-bold leading-relaxed shadow-sm ${
-                        msg.role === 'user' ? 'bg-slate-900 text-white rounded-tr-none' : 'bg-white border border-slate-50 text-slate-800 rounded-tl-none'
+                        msg.role === 'user' ? 'bg-gradient-to-tr from-pink-500 to-rose-400 text-white rounded-tr-none' : 'bg-white border border-slate-50 text-slate-800 rounded-tl-none'
                       }`}>
                         {msg.content}
                       </div>
@@ -182,23 +250,6 @@ const AIChatWidget = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      {!isOpen && (
-        <div className="relative group cursor-pointer pointer-events-auto" onClick={() => setIsOpen(true)}>
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-8 bg-pink-200/40 blur-2xl rounded-full" />
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} whileHover={{ scale: 1.1 }} className="w-44 h-44 relative">
-             <Canvas camera={{ position: [0, 0, 5], fov: 42 }} gl={{ alpha: true }}>
-                <Suspense fallback={null}>
-                   <Float speed={4} rotationIntensity={0.8} floatIntensity={0.8}><SkillBot size={1.0} /></Float>
-                   <Environment preset="city" />
-                </Suspense>
-             </Canvas>
-             <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.2 }} className="absolute right-[95%] top-1/2 -translate-y-1/2 px-4 py-2.5 bg-white rounded-full shadow-xl border border-slate-50 whitespace-nowrap hidden sm:flex items-center">
-                <p className="text-[12px] font-extrabold text-slate-800 tracking-tight">Need help? 👋</p>
-                <svg className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-2.5 h-3.5 fill-white" viewBox="0 0 10 12"><path d="M0 0 L10 6 L0 12 Z" /></svg>
-             </motion.div>
-          </motion.div>
-        </div>
-      )}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.05); border-radius: 10px; }

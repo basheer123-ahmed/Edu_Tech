@@ -8,7 +8,7 @@ import axios from 'axios';
 import { ShieldCheck, RefreshCw, CheckCircle2 } from 'lucide-react';
 
 const RegisterPage = () => {
-  const [role, setRole] = useState('STUDENT');
+  const role = 'STUDENT';
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -111,23 +111,22 @@ const RegisterPage = () => {
             <ArrowRight className="rotate-180" size={16} /> Back to Home
           </Link>
           <h2 className="text-3xl font-black text-slate-900 mb-2">Create Account</h2>
-          <p className="text-slate-500 font-medium">Join SkillStation and start achieving success.</p>
+          <p className="text-slate-500 font-medium">Join SkilStation and start achieving success.</p>
         </div>
 
-        {/* Role Switcher */}
-        <div className="flex p-1.5 bg-slate-50 border border-slate-100 rounded-2xl mb-10 max-w-md mx-auto">
-          {['STUDENT', 'INSTITUTION', 'ADMIN'].map(r => (
-            <button
-              key={r}
-              type="button"
-              onClick={() => setRole(r)}
-              className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all ${
-                role === r ? 'bg-white text-violet-600 shadow-sm border border-slate-100' : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              {r}
-            </button>
-          ))}
+        {/* Admin / Institution Notice Card */}
+        <div className="mb-10 bg-gradient-to-br from-pink-50 to-violet-50 border border-pink-100 rounded-2xl p-6 text-center shadow-[inset_0_0_20px_rgba(255,255,255,0.8)] backdrop-blur-sm relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500"></div>
+          <div className="flex justify-center mb-3">
+            <ShieldCheck className="text-pink-500" size={28} />
+          </div>
+          <p className="text-sm text-slate-700 font-medium leading-relaxed mb-4">
+            <strong>Admin</strong> and <strong>Institution</strong> access is securely managed by the platform administration.<br />
+            Please contact the administrator for login credentials.
+          </p>
+          <a href="mailto:support@skilstation.com" className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-white border border-pink-200 text-pink-600 text-xs font-black uppercase tracking-wider hover:bg-pink-50 hover:border-pink-300 transition-all shadow-sm">
+            <Mail size={14} /> Contact Admin
+          </a>
         </div>
 
         <form onSubmit={handleRegister} className="space-y-5">

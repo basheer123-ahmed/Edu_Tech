@@ -120,7 +120,7 @@ const LandingPage = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold text-secondary mb-4 font-bold">Enterprise-Ready Features</h2>
           <p className="text-gray-500 mb-16 max-w-2xl mx-auto">
-            SkillStation provides everything you need to manage your education and career in one place.
+            SkilStation provides everything you need to manage your education and career in one place.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -186,7 +186,7 @@ const LandingPage = () => {
         <div className="container mx-auto max-w-5xl bg-secondary rounded-[3rem] p-12 lg:p-20 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
           <div className="relative z-10 text-center max-w-2xl mx-auto">
-            <h2 className="text-4xl font-bold text-white mb-6">Stay updated with SkillStation</h2>
+            <h2 className="text-4xl font-bold text-white mb-6">Stay updated with SkilStation</h2>
             <p className="text-gray-400 mb-10">Join 50,000+ learners and get the latest news about courses, jobs, and features.</p>
             <div className="flex flex-col sm:flex-row gap-4">
               <input 

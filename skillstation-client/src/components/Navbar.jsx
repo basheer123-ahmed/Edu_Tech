@@ -51,7 +51,7 @@ const Navbar = () => {
               <Rocket size={24} />
             </div>
             <span className="text-xl font-bold text-secondary tracking-tight">
-              Skill<span className="text-primary">Station</span>
+              Skil<span className="text-primary">Station</span>
             </span>
           </Link>
 

@@ -26,7 +26,7 @@ const LeaderboardPage = () => {
             <Trophy size={32} />
           </div>
           <h1 className="text-5xl font-bold text-secondary mb-4">Skill <span className="text-primary">Leaderboard</span></h1>
-          <p className="text-xl text-gray-500">The top technical talents on SkillStation based on AI Skill Score.</p>
+          <p className="text-xl text-gray-500">The top technical talents on SkilStation based on AI Skill Score.</p>
         </div>
 
         {/* Podium */}

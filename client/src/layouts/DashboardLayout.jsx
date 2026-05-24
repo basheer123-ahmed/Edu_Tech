@@ -4,12 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, BookOpen, User, Building2, TrendingUp, 
   Briefcase, Award, FileText, Bell, Bot, Activity, 
-  Settings, Shield, Menu, Search
+  Settings, Shield, Menu, Search, UserPlus, ShieldAlert
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import { useSidebar } from '../context/SidebarContext';
 import { useAuth } from '../context/AuthContext';
+import AIChatWidget from '../components/AIChatWidget';
 
 const useWindowWidth = () => {
   const [width, setWidth] = React.useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -61,6 +62,13 @@ const DashboardLayout = ({ role = 'ADMIN' }) => {
         { name: 'Activity', path: '/dashboard/admin/activity-logs', icon: Activity },
         { name: 'Settings', path: '/dashboard/admin/settings', icon: Settings },
       ]
+    },
+    {
+      label: 'Access Management',
+      items: [
+        { name: 'Create Admin', path: '/dashboard/admin/create-admin', icon: ShieldAlert },
+        { name: 'Create Institution', path: '/dashboard/admin/institutions', icon: Building2 },
+      ]
     }
   ];
 
@@ -85,6 +93,13 @@ const DashboardLayout = ({ role = 'ADMIN' }) => {
         { name: 'Tests', path: '/dashboard/student/tests', icon: Activity },
         { name: 'Assignments', path: '/dashboard/student/assignments', icon: FileText },
         { name: 'Jobs', path: '/dashboard/student/jobs', icon: Briefcase },
+      ]
+    },
+    {
+      label: 'Career & Profile',
+      items: [
+        { name: 'Profile', path: '/dashboard/student/profile', icon: User },
+        { name: 'Resume Builder', path: '/dashboard/student/resume-builder', icon: FileText },
       ]
     },
     {
@@ -183,6 +198,11 @@ const DashboardLayout = ({ role = 'ADMIN' }) => {
             <Outlet />
           </div>
         </main>
+      </div>
+
+      {/* Global Dashboard Chatbot */}
+      <div className="fixed bottom-3 right-5 z-[60]">
+        <AIChatWidget position="bottom" />
       </div>
     </div>
   );

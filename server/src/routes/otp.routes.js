@@ -40,14 +40,14 @@ router.post('/send-otp', async (req, res) => {
 
     // Send email using Nodemailer
     const mailOptions = {
-      from: `"SkillStation Admin" <${process.env.EMAIL_USER}>`,
+      from: `"SkilStation Admin" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: 'Your SkillStation OTP Verification Code',
+      subject: 'Your SkilStation OTP Verification Code',
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-          <h2 style="color: #7c3aed; text-align: center;">SkillStation Verification</h2>
+          <h2 style="color: #7c3aed; text-align: center;">SkilStation Verification</h2>
           <p>Hello,</p>
-          <p>Your one-time password (OTP) for logging into SkillStation is:</p>
+          <p>Your one-time password (OTP) for logging into SkilStation is:</p>
           <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
             <span style="font-size: 32px; font-weight: 800; letter-spacing: 5px; color: #111827;">${otp}</span>
           </div>

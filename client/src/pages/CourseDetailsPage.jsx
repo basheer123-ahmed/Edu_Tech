@@ -74,7 +74,7 @@ const CourseDetailsPage = () => {
 
   const handleEnroll = async () => {
     if (isEnrolled) {
-      navigate(`/course/${course.id}/learn`);
+      navigate(`/learn/${course.id}`);
       return;
     }
 
@@ -89,7 +89,7 @@ const CourseDetailsPage = () => {
       await axios.post(`http://localhost:5000/api/courses/${course.id}/enroll`);
       toast.success('Successfully enrolled! ✨');
       setIsEnrolled(true);
-      navigate(`/course/${course.id}/learn`);
+      navigate(`/learn/${course.id}`);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Enrollment failed');
     } finally {
@@ -307,7 +307,7 @@ const CourseDetailsPage = () => {
                   <div className="space-y-4">
                     <div>
                       <h3 className="text-3xl font-black text-slate-900">{course.instructorName || 'Expert Instructor'}</h3>
-                      <p className="text-violet-600 font-black text-xs uppercase tracking-[0.2em]">Lead Instructor @ {course.institution?.user_institution_userIdTouser?.name || 'SkillStation'}</p>
+                      <p className="text-violet-600 font-black text-xs uppercase tracking-[0.2em]">Lead Instructor @ {course.institution?.user_institution_userIdTouser?.name || 'SkilStation'}</p>
                     </div>
                     <p className="text-slate-500 font-medium leading-relaxed">
                       With over 10 years of industry experience, our instructors are dedicated to providing the highest quality education and mentorship. They have trained thousands of students globally in cutting-edge technologies.

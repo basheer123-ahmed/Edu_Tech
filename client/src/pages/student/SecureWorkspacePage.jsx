@@ -11,7 +11,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import ExamProctor from '../../components/proctoring/ExamProctor';
 
-const SecureWorkspacePage = () => {
+const SecureWorkspacePage = ({ isProctored = false }) => {
   const { courseId, levelId } = useParams();
   const navigate = useNavigate();
 
@@ -67,7 +67,7 @@ const SecureWorkspacePage = () => {
     } catch (error) {
       console.error(error);
       toast.error('Failed to load level details');
-      navigate(`/dashboard/student/assignments/${courseId}`);
+      navigate(`/learn/${courseId}`);
     } finally {
       setLoading(false);
     }
@@ -76,6 +76,12 @@ const SecureWorkspacePage = () => {
   useEffect(() => {
     fetchLevelDetails();
   }, [levelId]);
+
+  useEffect(() => {
+    if (!loading && level && !isProctored) {
+      setIsTestStarted(true);
+    }
+  }, [loading, level, isProctored]);
 
   // Clean up streams
   const cleanupStreams = () => {
@@ -109,7 +115,7 @@ const SecureWorkspacePage = () => {
 
   // Timer countdown
   useEffect(() => {
-    if (!isTestStarted || resultSummary) return;
+    if (!isTestStarted || resultSummary || !isProctored) return;
     const interval = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
@@ -122,7 +128,7 @@ const SecureWorkspacePage = () => {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [isTestStarted, resultSummary]);
+  }, [isTestStarted, resultSummary, isProctored]);
 
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60);
@@ -489,10 +495,10 @@ const SecureWorkspacePage = () => {
           {/* Action buttons */}
           <div className="flex gap-4 border-t border-slate-800 pt-6">
             <button 
-              onClick={() => navigate(`/dashboard/student/assignments/${courseId}`)}
+              onClick={() => navigate(`/learn/${courseId}`)}
               className="flex-1 py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl font-bold text-xs transition"
             >
-              Cancel Exam
+              {isProctored ? 'Cancel Exam' : 'Return to Workspace'}
             </button>
             <button 
               disabled={
@@ -543,10 +549,10 @@ const SecureWorkspacePage = () => {
 
           <div className="flex flex-col gap-3">
             <button 
-              onClick={() => navigate(`/dashboard/student/assignments/${courseId}`)}
+              onClick={() => navigate(`/learn/${courseId}`)}
               className="py-3.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl font-black text-xs shadow-md shadow-pink-900/20"
             >
-              Back to Roadmap Catalog
+              {isProctored ? 'Return to Course Workspace' : 'Continue Learning'}
             </button>
           </div>
         </div>
@@ -559,13 +565,15 @@ const SecureWorkspacePage = () => {
   return (
     <div className="min-h-screen bg-slate-950 font-sans text-white p-6 flex flex-col justify-between overflow-hidden">
       {/* Proctoring Frame */}
-      <ExamProctor 
-        examId={levelId} 
-        onViolationLimitExceeded={handleAutoTerminate} 
-        isProctoringActive={isTestStarted} 
-        cameraStream={cameraStreamObj}
-        screenStream={screenStreamObj}
-      />
+      {isProctored && (
+        <ExamProctor 
+          examId={levelId} 
+          onViolationLimitExceeded={handleAutoTerminate} 
+          isProctoringActive={isTestStarted} 
+          cameraStream={cameraStreamObj}
+          screenStream={screenStreamObj}
+        />
+      )}
 
       {/* Top Bar Navigation */}
       <div className="bg-slate-900/40 backdrop-blur-md px-6 py-4 rounded-3xl border border-slate-800 flex items-center justify-between gap-4 mb-6 relative z-20">
@@ -583,17 +591,19 @@ const SecureWorkspacePage = () => {
 
         {/* Timer & Submit */}
         <div className="flex items-center gap-4">
-          <div className="px-4 py-2 bg-slate-950/80 border border-slate-850 rounded-2xl flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-pink-500 animate-ping" />
-            <span className="text-xs font-mono font-black text-pink-400">TIME: {formatTime(timeLeft)}</span>
-          </div>
+          {isProctored && (
+            <div className="px-4 py-2 bg-slate-950/80 border border-slate-850 rounded-2xl flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-pink-500 animate-ping" />
+              <span className="text-xs font-mono font-black text-pink-400">TIME: {formatTime(timeLeft)}</span>
+            </div>
+          )}
 
           <button 
             onClick={handleSubmitAssignment}
             disabled={isSubmitting}
             className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl font-black text-xs shadow-lg shadow-pink-900/20 hover:opacity-90 transition flex items-center gap-1.5"
           >
-            {isSubmitting ? 'Evaluating...' : <><Send size={12} /> Submit Exam</>}
+            {isSubmitting ? 'Evaluating...' : <><Send size={12} /> {isProctored ? 'Submit Exam' : 'Submit Assignment'}</>}
           </button>
         </div>
       </div>

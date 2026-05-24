@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'skillstation-api',
+      name: 'skilstation-api',
       script: 'index.js',
       instances: 'max',
       exec_mode: 'cluster',

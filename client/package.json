@@ -1,5 +1,5 @@
 {
-  "name": "skillstation-client",
+  "name": "skilstation-client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -21,6 +21,7 @@
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.475.0",
     "react": "^19.2.6",
+    "react-countup": "^6.5.3",
     "react-dom": "^19.2.6",
     "react-error-boundary": "^6.1.1",
     "react-hook-form": "^7.75.0",

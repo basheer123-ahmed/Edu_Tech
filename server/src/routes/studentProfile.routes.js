@@ -12,7 +12,8 @@ const {
   deleteProject,
   updateSkills,
   addCertification,
-  deleteCertification
+  deleteCertification,
+  updateResumeData
 } = require('../controllers/studentProfile.controller');
 
 // All routes are protected
@@ -20,6 +21,7 @@ router.use(authenticate);
 
 router.get('/me', getMyProfile);
 router.put('/personal', updatePersonalInfo);
+router.put('/resume-data', updateResumeData);
 
 router.post('/education', addEducation);
 router.put('/education/:id', updateEducation);

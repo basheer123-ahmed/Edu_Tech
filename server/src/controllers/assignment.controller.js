@@ -145,6 +145,54 @@ async function seedCourseAssignments(courseId) {
       assignmentId: lvl3.id
     }
   });
+
+  // Level 4: Final Comprehensive Exam (Secure)
+  const lvl4 = await prisma.assignment.create({
+    data: {
+      id: uuid.v4(),
+      title: 'Final Comprehensive Exam (Secure)',
+      description: 'The secure, proctored comprehensive exam testing your core logical programming and design foundations.',
+      order: 4,
+      xpReward: 300,
+      difficulty: 'ADVANCED',
+      status: 'PUBLISHED',
+      courseId,
+    }
+  });
+
+  await prisma.question.create({
+    data: {
+      id: uuid.v4(),
+      text: 'Which data structure follows the Last-In-First-Out (LIFO) principle?',
+      type: 'MCQ',
+      order: 1,
+      points: 20,
+      options: JSON.stringify(['Queue', 'Stack', 'Linked List', 'Binary Tree']),
+      correctOption: 'Stack',
+      assignmentId: lvl4.id
+    }
+  });
+
+  await prisma.question.create({
+    data: {
+      id: uuid.v4(),
+      text: 'Write a function solve(n) that returns the nth Fibonacci number. Assume n >= 0.',
+      type: 'CODING',
+      order: 2,
+      points: 50,
+      starterCode: JSON.stringify({
+        javascript: 'function solve(n) {\n  if (n <= 1) return n;\n  let prev2 = 0, prev1 = 1;\n  for (let i = 2; i <= n; i++) {\n    let current = prev1 + prev2;\n    prev2 = prev1;\n    prev1 = current;\n  }\n  return prev1;\n}',
+        python: 'def solve(n):\n    if n <= 1: return n\n    prev2, prev1 = 0, 1\n    for i in range(2, n + 1):\n        current = prev1 + prev2\n        prev2 = prev1\n        prev1 = current\n    return prev1',
+        cpp: 'int solve(int n) {\n    if (n <= 1) return n;\n    int prev2 = 0, prev1 = 1;\n    for (int i = 2; i <= n; i++) {\n        int current = prev1 + prev2;\n        prev2 = prev1;\n        prev1 = current;\n    }\n    return prev1;\n}',
+        java: 'public class Solution {\n    public static int solve(int n) {\n        if (n <= 1) return n;\n        int prev2 = 0, prev1 = 1;\n        for (int i = 2; i <= n; i++) {\n            int current = prev1 + prev2;\n            prev2 = prev1;\n            prev1 = current;\n        }\n        return prev1;\n    }\n}'
+      }),
+      testCases: JSON.stringify([
+        { input: '5', output: '5' },
+        { input: '8', output: '21' }
+      ]),
+      assignmentId: lvl4.id
+    }
+  });
 }
 
 /**
@@ -370,6 +418,71 @@ const getCourseAssignments = asyncHandler(async (req, res) => {
 });
 
 /**
+ * Robust helper to match student MCQ answer against the correct option
+ */
+const isMcqCorrect = (studentAnswer, correctOption, optionsJson) => {
+  if (studentAnswer === undefined || studentAnswer === null || correctOption === undefined || correctOption === null) {
+    return false;
+  }
+
+  const cleanStudent = String(studentAnswer).trim().toLowerCase();
+  const cleanCorrect = String(correctOption).trim().toLowerCase();
+
+  // 1. Direct comparison (case-insensitive, trimmed)
+  if (cleanStudent === cleanCorrect) return true;
+
+  // 2. Strip standard A./A)/A- prefixes and compare
+  const stripPrefix = (str) => str.replace(/^[A-Da-d0-9]\s*[\.\):\-\s]+\s*/, '').trim().toLowerCase();
+  if (stripPrefix(studentAnswer) === stripPrefix(correctOption)) return true;
+
+  // Try parsing options if provided
+  let options = [];
+  if (optionsJson) {
+    try {
+      options = typeof optionsJson === 'string' ? JSON.parse(optionsJson) : optionsJson;
+    } catch (e) {
+      console.error("Error parsing options in isMcqCorrect:", e);
+    }
+  }
+
+  if (Array.isArray(options) && options.length > 0) {
+    // 3. If correctOption is a single letter (e.g., 'A', 'B', 'C', 'D')
+    if (/^[a-d]$/.test(cleanCorrect)) {
+      const index = cleanCorrect.charCodeAt(0) - 97; // 'a' is 97
+      if (options[index]) {
+        const cleanOptionText = String(options[index]).trim().toLowerCase();
+        if (cleanStudent === cleanOptionText || stripPrefix(cleanStudent) === stripPrefix(cleanOptionText)) return true;
+      }
+    }
+
+    // 4. If correctOption is an option index (e.g., '0', '1', '2', '3')
+    const parsedIdx = parseInt(cleanCorrect, 10);
+    if (!isNaN(parsedIdx) && parsedIdx >= 0 && parsedIdx < options.length) {
+      const cleanOptionText = String(options[parsedIdx]).trim().toLowerCase();
+      if (cleanStudent === cleanOptionText || stripPrefix(cleanStudent) === stripPrefix(cleanOptionText)) return true;
+    }
+
+    // 5. Reverse check: What if studentAnswer is 'A', 'B', 'C', 'D' but correctOption is the option text?
+    if (/^[a-d]$/.test(cleanStudent)) {
+      const index = cleanStudent.charCodeAt(0) - 97;
+      if (options[index]) {
+        const cleanOptionText = String(options[index]).trim().toLowerCase();
+        if (cleanCorrect === cleanOptionText || stripPrefix(cleanCorrect) === stripPrefix(cleanOptionText)) return true;
+      }
+    }
+
+    // 6. Reverse check: What if studentAnswer is '0', '1', '2', '3' but correctOption is the option text?
+    const parsedStudentIdx = parseInt(cleanStudent, 10);
+    if (!isNaN(parsedStudentIdx) && parsedStudentIdx >= 0 && parsedStudentIdx < options.length) {
+      const cleanOptionText = String(options[parsedStudentIdx]).trim().toLowerCase();
+      if (cleanCorrect === cleanOptionText || stripPrefix(cleanCorrect) === stripPrefix(cleanOptionText)) return true;
+    }
+  }
+
+  return false;
+};
+
+/**
  * SUBMIT and Grade assignment levels (MCQ + Code Compilation)
  */
 const submitAssignment = asyncHandler(async (req, res) => {
@@ -399,12 +512,21 @@ const submitAssignment = asyncHandler(async (req, res) => {
   let earnedPoints = 0;
   const codingResults = {};
 
+  console.log(`\n📝 Grading submission for assignmentId: ${assignmentId}`);
+
   for (const q of assignment.question) {
     totalPoints += q.points;
 
     if (q.type === 'MCQ') {
       const studentAnswer = answers[q.id];
-      if (studentAnswer === q.correctOption) {
+      const isCorrect = isMcqCorrect(studentAnswer, q.correctOption, q.options);
+      
+      console.log(`   [MCQ] Question: "${q.text.substring(0, 40)}..."`);
+      console.log(`         Student Answer: "${studentAnswer}"`);
+      console.log(`         Correct Option: "${q.correctOption}"`);
+      console.log(`         Grading Result: ${isCorrect ? '✅ CORRECT' : '❌ INCORRECT'}`);
+
+      if (isCorrect) {
         earnedPoints += q.points;
       }
     } else if (q.type === 'CODING') {
@@ -413,6 +535,10 @@ const submitAssignment = asyncHandler(async (req, res) => {
       const execution = await runCode(language, codeInput, testCases);
       
       codingResults[q.id] = execution;
+      
+      console.log(`   [CODING] Question: "${q.text.substring(0, 40)}..."`);
+      console.log(`            Grading Result: ${execution.success ? '✅ SUCCESS' : '❌ FAILED'} (${execution.passedCount}/${execution.totalCount} test cases)`);
+
       if (execution.success) {
         earnedPoints += q.points;
       }

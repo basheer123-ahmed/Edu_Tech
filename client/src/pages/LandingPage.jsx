@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import CountUp from 'react-countup';
 import { 
   Sparkles, Rocket, User, Clock, Star, Smartphone, 
   ImageIcon, LayoutGrid, Activity, Zap, Shield, Monitor, 
@@ -154,12 +155,12 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 text-center">
             {[
-              { label: 'Total Students', value: stats.totalStudents.toLocaleString() + '+' },
-              { label: 'Total Courses', value: stats.totalCourses },
-              { label: 'Coding Submissions', value: stats.totalSubmissions.toLocaleString() + '+' },
-              { label: 'AI Generated Exams', value: stats.totalAIExams },
-              { label: 'Active Learners', value: stats.activeLearners.toLocaleString() + '+' },
-              { label: 'Certifications Issued', value: stats.certificationsIssued }
+              { label: 'Total Students', value: stats.totalStudents, suffix: '+' },
+              { label: 'Total Courses', value: stats.totalCourses, suffix: '' },
+              { label: 'Coding Submissions', value: stats.totalSubmissions, suffix: '+' },
+              { label: 'AI Generated Exams', value: stats.totalAIExams, suffix: '' },
+              { label: 'Active Learners', value: stats.activeLearners, suffix: '+' },
+              { label: 'Certifications Issued', value: stats.certificationsIssued, suffix: '' }
             ].map((stat, i) => (
               <motion.div 
                 key={i}
@@ -170,7 +171,19 @@ const LandingPage = () => {
                 className="space-y-1"
               >
                 <h3 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600 mb-2">
-                  {stat.value}
+                  {(() => {
+                    const Component = CountUp.default || CountUp;
+                    return (
+                      <Component 
+                        end={stat.value} 
+                        duration={2.5} 
+                        separator="," 
+                        suffix={stat.suffix} 
+                        enableScrollSpy={true} 
+                        scrollSpyOnce={true} 
+                      />
+                    );
+                  })()}
                 </h3>
                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] leading-tight">{stat.label}</p>
               </motion.div>
@@ -199,7 +212,7 @@ const LandingPage = () => {
       <section className="relative z-10 py-32 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Why SkillStation</h4>
+            <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Why SkilStation</h4>
             <h2 className="text-4xl md:text-5xl font-black text-[#1E1B4B] mb-6 flex items-center justify-center gap-3">
               Join in on <Sparkles className="text-pink-500" /> Something Big
             </h2>
@@ -211,34 +224,46 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               { 
-                title: '🤖 AI Question Generator', 
+                title: 'AI Question Generator', 
                 desc: 'Generate up to 40 questions per module. Fully supports custom difficulty ranges, custom tags, MCQs, Coding, or both.', 
-                icon: <Bot size={28} className="text-violet-500" /> 
+                icon: <Bot size={26} className="text-fuchsia-500 group-hover:scale-110 group-hover:rotate-[6deg] transition-all duration-500" />,
+                badge: 'AI Powered',
+                glowColor: 'rgba(217, 70, 239, 0.3)'
               },
               { 
-                title: '💻 Live Coding Workspace', 
+                title: 'Live Coding Workspace', 
                 desc: 'Integrated Monaco Editor (same code engine powering VS Code) with multi-language execution and live test cases validator.', 
-                icon: <Code2 size={28} className="text-pink-500" /> 
+                icon: <Code2 size={26} className="text-pink-500 group-hover:scale-110 group-hover:rotate-[6deg] transition-all duration-500" />,
+                badge: 'Interactive',
+                glowColor: 'rgba(236, 72, 153, 0.3)'
               },
               { 
-                title: '🛡 AI Proctored Exams', 
+                title: 'AI Proctored Exams', 
                 desc: 'Full-screen checking, webcam monitoring, sound level check, and entire screen sharing permission verification.', 
-                icon: <Shield size={28} className="text-indigo-500" /> 
+                icon: <Shield size={26} className="text-indigo-500 group-hover:scale-110 group-hover:rotate-[6deg] transition-all duration-500" />,
+                badge: 'Proctor-Grade',
+                glowColor: 'rgba(99, 102, 241, 0.3)'
               },
               { 
-                title: '📈 Productivity Analytics', 
+                title: 'Productivity Analytics', 
                 desc: 'GitHub-style heatmap contribution tracking, XP growth graphs, streaks counters, and custom skill radar competency charts.', 
-                icon: <Activity size={28} className="text-orange-500" /> 
+                icon: <Activity size={26} className="text-violet-500 group-hover:scale-110 group-hover:rotate-[6deg] transition-all duration-500" />,
+                badge: 'Streaks Board',
+                glowColor: 'rgba(168, 85, 247, 0.3)'
               },
               { 
-                title: '🏆 Smart Roadmaps', 
+                title: 'Smart Roadmaps', 
                 desc: 'Unlock module tasks, track lesson milestones, progress step-by-step through core skill checkpoints and unlock coding tasks.', 
-                icon: <GraduationCap size={28} className="text-emerald-500" /> 
+                icon: <GraduationCap size={26} className="text-pink-600 group-hover:scale-110 group-hover:rotate-[6deg] transition-all duration-500" />,
+                badge: 'Personalized',
+                glowColor: 'rgba(219, 39, 119, 0.3)'
               },
               { 
-                title: '🎯 Placement Preparation', 
-                desc: 'Mock placement preparation dashboard, custom mock tests, real corporate interview simulators, and ats-profile analyzer.', 
-                icon: <Trophy size={28} className="text-amber-500" /> 
+                title: 'Placement Preparation', 
+                desc: 'Mock placement preparation dashboard, custom mock tests, real corporate interview simulators, and ATS-profile analyzer.', 
+                icon: <Trophy size={26} className="text-amber-500 group-hover:scale-110 group-hover:rotate-[6deg] transition-all duration-500" />,
+                badge: 'Job Ready',
+                glowColor: 'rgba(245, 158, 11, 0.3)'
               },
             ].map((feat, i) => (
               <motion.div
@@ -246,16 +271,41 @@ const LandingPage = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.08 }}
                 whileHover={{ y: -10 }}
-                className="group p-10 rounded-[2.5rem] bg-white border border-white shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.05)] transition-all duration-500 relative overflow-hidden"
+                className="group p-8 md:p-10 rounded-[2.5rem] bg-white/65 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgba(244,114,182,0.03)] hover:shadow-[0_20px_50px_rgba(244,114,182,0.15)] hover:border-pink-200/50 transition-all duration-500 relative overflow-hidden flex flex-col justify-between"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-slate-50 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700" />
-                <div className="w-14 h-14 bg-slate-900/5 rounded-2xl flex items-center justify-center mb-8 relative z-10">
-                  {feat.icon}
+                {/* Top Corner Glow Blob */}
+                <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-br from-pink-300/20 to-purple-400/20 rounded-full -mr-16 -mt-16 blur-2xl group-hover:scale-150 transition-all duration-700 pointer-events-none" />
+                
+                {/* Accent Hover Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/[0.01] via-transparent to-purple-600/[0.01] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                <div>
+                  <div className="flex justify-between items-start mb-8 relative z-10">
+                    {/* Glowing Icon Wrapper */}
+                    <div className="w-14 h-14 bg-gradient-to-br from-white/90 to-pink-50/30 border border-pink-100/50 rounded-2xl flex items-center justify-center shadow-[inset_0_2px_4px_rgba(236,72,153,0.04)] relative">
+                      <div className="absolute inset-0 bg-pink-500/5 blur-md rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                      {feat.icon}
+                    </div>
+
+                    {/* Small tag badge */}
+                    <span className="px-3 py-1 bg-pink-500/10 border border-pink-500/20 text-pink-500 text-[8px] font-black uppercase tracking-widest rounded-full">
+                      {feat.badge}
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl font-black text-slate-800 mb-4 relative z-10 tracking-tight leading-snug group-hover:bg-clip-text group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-pink-600 group-hover:to-fuchsia-600 transition-all duration-300">
+                    {feat.title}
+                  </h3>
+                  
+                  <p className="text-xs text-slate-600/90 leading-relaxed font-bold relative z-10 transition-colors duration-300">
+                    {feat.desc}
+                  </p>
                 </div>
-                <h3 className="text-xl font-black text-slate-900 mb-4 relative z-10">{feat.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed font-medium relative z-10">{feat.desc}</p>
+
+                {/* Bottom Border Accent Indicator */}
+                <div className="absolute bottom-0 left-8 right-8 h-1 bg-gradient-to-r from-pink-500 to-fuchsia-500 rounded-t-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center" />
               </motion.div>
             ))}
           </div>
@@ -284,8 +334,8 @@ const LandingPage = () => {
                 onClick={() => setActiveMockupTab(tab.id)}
                 className={`px-6 py-3 rounded-full font-black text-xs uppercase tracking-wider transition-all duration-300 ${
                   activeMockupTab === tab.id
-                    ? 'bg-slate-900 text-white shadow-xl shadow-slate-950/20'
-                    : 'bg-white/40 text-slate-600 hover:bg-white/60 border border-slate-200'
+                    ? 'bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white shadow-xl shadow-pink-500/20 scale-[1.02]'
+                    : 'bg-white/60 text-slate-600 hover:bg-white/80 border border-pink-100/40'
                 }`}
               >
                 {tab.label}
@@ -294,32 +344,32 @@ const LandingPage = () => {
           </div>
 
           {/* Tab Content Mockups */}
-          <div className="max-w-5xl mx-auto bg-slate-950 p-6 rounded-[2.5rem] border border-slate-800 shadow-2xl relative min-h-[400px]">
+          <div className="max-w-5xl mx-auto bg-white/70 backdrop-blur-2xl p-8 rounded-[2.5rem] border border-white/80 shadow-[0_20px_50px_rgba(244,114,182,0.1)] relative min-h-[400px] overflow-hidden">
             
             {activeMockupTab === 'analytics' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 text-left">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div className="flex items-center justify-between border-b border-pink-100 pb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-pink-500 flex items-center justify-center font-black text-white text-lg">J</div>
                     <div>
-                      <h4 className="text-white font-black text-sm">John Doe</h4>
-                      <p className="text-[10px] text-slate-400">Student Analytics Dashboard</p>
+                      <h4 className="text-[#1E1B4B] font-black text-sm">John Doe</h4>
+                      <p className="text-[10px] text-slate-500">Student Analytics Dashboard</p>
                     </div>
                   </div>
-                  <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full text-[9px] font-black tracking-widest uppercase">Verified Profile</span>
+                  <span className="px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-600 rounded-full text-[9px] font-black tracking-widest uppercase">Verified Profile</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                    <p className="text-[9px] text-slate-400 font-black uppercase">Employability Rating</p>
-                    <p className="text-white font-black text-xl mt-1">85%</p>
+                  <div className="bg-white/50 backdrop-blur-md p-4 rounded-2xl border border-pink-100/50 shadow-sm hover:border-pink-300/50 transition-all duration-300">
+                    <p className="text-[9px] text-pink-500 font-black uppercase tracking-wider">Employability Rating</p>
+                    <p className="text-[#1E1B4B] font-black text-xl mt-1">85%</p>
                   </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                    <p className="text-[9px] text-slate-400 font-black uppercase">XP Earned</p>
-                    <p className="text-white font-black text-xl mt-1">3,450 XP</p>
+                  <div className="bg-white/50 backdrop-blur-md p-4 rounded-2xl border border-pink-100/50 shadow-sm hover:border-pink-300/50 transition-all duration-300">
+                    <p className="text-[9px] text-pink-500 font-black uppercase tracking-wider">XP Earned</p>
+                    <p className="text-[#1E1B4B] font-black text-xl mt-1">3,450 XP</p>
                   </div>
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                    <p className="text-[9px] text-slate-400 font-black uppercase">Certifications</p>
-                    <p className="text-white font-black text-xl mt-1">3 Unlocked</p>
+                  <div className="bg-white/50 backdrop-blur-md p-4 rounded-2xl border border-pink-100/50 shadow-sm hover:border-pink-300/50 transition-all duration-300">
+                    <p className="text-[9px] text-pink-500 font-black uppercase tracking-wider">Certifications</p>
+                    <p className="text-[#1E1B4B] font-black text-xl mt-1">3 Unlocked</p>
                   </div>
                 </div>
               </motion.div>
@@ -327,30 +377,30 @@ const LandingPage = () => {
 
             {activeMockupTab === 'generator' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 text-left">
-                <div className="border-b border-slate-800 pb-4">
-                  <h4 className="text-white font-black text-sm">AI Module-based Question Generator</h4>
-                  <p className="text-[10px] text-slate-400">Generate up to 40 topic-wise coding challenges</p>
+                <div className="border-b border-pink-100 pb-4">
+                  <h4 className="text-[#1E1B4B] font-black text-sm">AI Module-based Question Generator</h4>
+                  <p className="text-[10px] text-slate-500">Generate up to 40 topic-wise coding challenges</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <div>
-                      <label className="text-[9px] font-black text-slate-400 uppercase">Module Name</label>
-                      <div className="px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white">Java OOP Basics</div>
+                      <label className="text-[9px] font-black text-pink-500 uppercase tracking-wider">Module Name</label>
+                      <div className="px-4 py-2.5 bg-white/50 border border-pink-100/60 rounded-xl text-xs text-slate-700 font-bold shadow-sm">Java OOP Basics</div>
                     </div>
                     <div>
-                      <label className="text-[9px] font-black text-slate-400 uppercase">Topic Tags</label>
+                      <label className="text-[9px] font-black text-pink-500 uppercase tracking-wider">Topic Tags</label>
                       <div className="flex gap-1.5 mt-1">
-                        <span className="px-2 py-0.5 bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[8px] font-black rounded">Classes</span>
-                        <span className="px-2 py-0.5 bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[8px] font-black rounded">Inheritance</span>
+                        <span className="px-2 py-0.5 bg-pink-50 border border-pink-200 text-pink-600 text-[8px] font-black rounded">Classes</span>
+                        <span className="px-2 py-0.5 bg-pink-50 border border-pink-200 text-pink-600 text-[8px] font-black rounded">Inheritance</span>
                       </div>
                     </div>
                   </div>
                   <div className="space-y-3">
                     <div>
-                      <label className="text-[9px] font-black text-slate-400 uppercase">Question Type</label>
-                      <div className="px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white">Coding Tasks + MCQs</div>
+                      <label className="text-[9px] font-black text-pink-500 uppercase tracking-wider">Question Type</label>
+                      <div className="px-4 py-2.5 bg-white/50 border border-pink-100/60 rounded-xl text-xs text-slate-700 font-bold shadow-sm">Coding Tasks + MCQs</div>
                     </div>
-                    <button className="w-full py-3 bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white rounded-lg font-black text-xs uppercase shadow-lg shadow-pink-500/10">
+                    <button className="w-full py-3 bg-gradient-to-r from-pink-500 to-fuchsia-600 hover:from-pink-600 hover:to-fuchsia-700 text-white rounded-xl font-black text-xs uppercase shadow-lg shadow-pink-500/20 hover:shadow-pink-500/35 transition-all duration-300 hover:-translate-y-0.5">
                       🚀 Generate Questions
                     </button>
                   </div>
@@ -360,36 +410,36 @@ const LandingPage = () => {
 
             {activeMockupTab === 'exam' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 text-left">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div className="flex items-center justify-between border-b border-pink-100 pb-4">
                   <div>
-                    <h4 className="text-white font-black text-sm">Secure Exam Security Verification</h4>
-                    <p className="text-[10px] text-slate-400">Continuous AI verification and proctor check-list</p>
+                    <h4 className="text-[#1E1B4B] font-black text-sm">Secure Exam Security Verification</h4>
+                    <p className="text-[10px] text-slate-500">Continuous AI verification and proctor check-list</p>
                   </div>
                   <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex flex-col items-center justify-center text-center min-h-[160px] relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent z-10" />
+                  <div className="bg-pink-50/45 p-4 rounded-2xl border border-pink-100/50 flex flex-col items-center justify-center text-center min-h-[160px] relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-t from-pink-100/30 via-transparent to-transparent z-10" />
                     <User className="text-pink-500 w-12 h-12 relative z-20 animate-pulse" />
-                    <p className="text-xs font-black text-white relative z-20 mt-2">Webcam Camera Stream Active</p>
-                    <p className="text-[9px] text-emerald-400 font-bold relative z-20 uppercase">Proctoring Connected</p>
+                    <p className="text-xs font-black text-[#1E1B4B] relative z-20 mt-2">Webcam Camera Stream Active</p>
+                    <p className="text-[9px] text-emerald-600 font-bold relative z-20 uppercase tracking-widest">Proctoring Connected</p>
                   </div>
                   <div className="space-y-2.5 flex flex-col justify-center">
-                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-600">
                       <span>Webcam Access</span>
-                      <span className="text-emerald-400">✓ Enabled</span>
+                      <span className="text-emerald-600 font-extrabold">✓ Enabled</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-600">
                       <span>Microphone Sound Level</span>
-                      <span className="text-emerald-400">✓ Connected</span>
+                      <span className="text-emerald-600 font-extrabold">✓ Connected</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-600">
                       <span>Fullscreen Verification</span>
-                      <span className="text-emerald-400">✓ Secured</span>
+                      <span className="text-emerald-600 font-extrabold">✓ Secured</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs font-bold text-white">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-600">
                       <span>Entire Screen Share</span>
-                      <span className="text-emerald-400">✓ Validated</span>
+                      <span className="text-emerald-600 font-extrabold">✓ Validated</span>
                     </div>
                   </div>
                 </div>
@@ -398,20 +448,20 @@ const LandingPage = () => {
 
             {activeMockupTab === 'workspace' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 text-left">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Interactive Coding Lab</span>
-                  <span className="px-2.5 py-0.5 bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[8px] font-black rounded">Java</span>
+                <div className="flex items-center justify-between border-b border-pink-100 pb-3">
+                  <span className="text-[10px] font-black text-pink-500 uppercase tracking-widest">Interactive Coding Lab</span>
+                  <span className="px-2.5 py-0.5 bg-pink-50 border border-pink-200 text-pink-600 text-[8px] font-black rounded">Java</span>
                 </div>
-                <div className="font-mono text-xs bg-slate-900 p-4 rounded-xl border border-slate-800 text-slate-300">
-                  <p className="text-slate-500">// Task: Calculate factorial of N recursively</p>
-                  <p><span className="text-purple-400">public int</span> <span className="text-blue-400">factorial</span>(<span className="text-purple-400">int</span> n) &#123;</p>
-                  <p className="pl-4"><span className="text-purple-400">if</span> (n &lt;= 1) <span className="text-purple-400">return</span> 1;</p>
-                  <p className="pl-4"><span className="text-purple-400">return</span> n * factorial(n - 1);</p>
+                <div className="font-mono text-xs bg-pink-50/20 backdrop-blur-md p-4 rounded-2xl border border-pink-100/50 text-slate-700 shadow-inner">
+                  <p className="text-slate-400">// Task: Calculate factorial of N recursively</p>
+                  <p><span className="text-fuchsia-600 font-bold">public int</span> <span className="text-pink-600 font-bold">factorial</span>(<span className="text-fuchsia-600 font-bold">int</span> n) &#123;</p>
+                  <p className="pl-4"><span className="text-fuchsia-600 font-bold">if</span> (n &lt;= 1) <span className="text-fuchsia-600 font-bold">return</span> 1;</p>
+                  <p className="pl-4"><span className="text-fuchsia-600 font-bold">return</span> n * factorial(n - 1);</p>
                   <p>&#125;</p>
                 </div>
-                <div className="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-800 text-[10px] font-bold text-emerald-400">
+                <div className="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-pink-100/40 text-[10px] font-bold text-emerald-600 shadow-sm">
                   <span>✓ All test cases passed successfully!</span>
-                  <button className="px-4 py-1.5 bg-emerald-600 text-white rounded-lg text-[9px] font-black uppercase">Run Code</button>
+                  <button className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase transition-all duration-300 shadow-md shadow-emerald-500/10">Run Code</button>
                 </div>
               </motion.div>
             )}
@@ -422,12 +472,12 @@ const LandingPage = () => {
 
       {/* 6. PRODUCTIVITY HEATMAP PREVIEW */}
       <section className="relative z-10 py-32 px-6">
-        <div className="max-w-4xl mx-auto bg-slate-950 p-8 rounded-[2.5rem] border border-slate-800/80 shadow-2xl relative overflow-hidden text-center">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="max-w-4xl mx-auto bg-white/70 backdrop-blur-2xl p-8 rounded-[2.5rem] border border-white/80 shadow-[0_20px_50px_rgba(244,114,182,0.1)] relative overflow-hidden text-center">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/15 rounded-full blur-2xl pointer-events-none" />
           
           <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Coding Consistency</h4>
-          <h2 className="text-3xl md:text-4xl font-black text-white mb-6">Productivity Heatmap Preview</h2>
-          <p className="text-slate-400 max-w-xl mx-auto font-medium text-sm mb-10">
+          <h2 className="text-3xl md:text-4xl font-black text-[#1E1B4B] mb-6">Productivity Heatmap Preview</h2>
+          <p className="text-slate-500 max-w-xl mx-auto font-medium text-sm mb-10">
             Every submission, compilation run, and test-case verification is logged onto your annual progress board. 
             Maintain your daily streak to level up your global rankings.
           </p>
@@ -444,7 +494,7 @@ const LandingPage = () => {
                         key={row} 
                         className="w-3 h-3 rounded-[3px]" 
                         style={{ 
-                          background: activeIndex % 6 === 0 ? '#e1306c' : activeIndex % 5 === 0 ? '#800080' : activeIndex % 3 === 0 ? '#4a154b' : '#1e293b' 
+                          background: activeIndex % 7 === 0 ? '#86198f' : activeIndex % 5 === 0 ? '#db2777' : activeIndex % 3 === 0 ? '#ec4899' : activeIndex % 2 === 0 ? '#f472b6' : '#fce7f3' 
                         }} 
                       />
                     );
@@ -454,10 +504,10 @@ const LandingPage = () => {
             </div>
           </div>
 
-          <div className="flex justify-center items-center gap-4 text-xs font-bold text-slate-400 mt-6">
+          <div className="flex justify-center items-center gap-4 text-xs font-bold text-slate-500 mt-6">
             <span>Less</span>
             <div className="flex gap-1">
-              {['#1e293b', '#4a154b', '#800080', '#c13584', '#e1306c'].map(c => (
+              {['#fce7f3', '#f472b6', '#ec4899', '#db2777', '#86198f'].map(c => (
                 <div key={c} className="w-3 h-3 rounded-[3px]" style={{ background: c }} />
               ))}
             </div>
@@ -473,8 +523,8 @@ const LandingPage = () => {
           <h2 className="text-4xl md:text-5xl font-black text-[#1E1B4B] mb-6">Gamified Skill Rankings</h2>
           <p className="text-slate-500 max-w-xl mx-auto font-medium mb-12">Level up and earn experience points to unlock badges and rank on the global leaderboard.</p>
 
-          <div className="bg-slate-950 rounded-[2.5rem] border border-slate-800 shadow-2xl p-8 space-y-4 text-left">
-            <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3 border-b border-slate-800">
+          <div className="bg-white/70 backdrop-blur-2xl rounded-[2.5rem] border border-white/80 shadow-[0_20px_50px_rgba(244,114,182,0.1)] p-8 space-y-4 text-left">
+            <div className="flex justify-between items-center text-[10px] font-black text-pink-500 uppercase tracking-widest pb-3 border-b border-pink-100">
               <span>Student Profile</span>
               <div className="flex gap-16">
                 <span>Streak</span>
@@ -484,21 +534,25 @@ const LandingPage = () => {
 
             <div className="space-y-2">
               {topStudents.map((st, sIdx) => (
-                <div key={sIdx} className="flex justify-between items-center bg-slate-900/50 p-4 rounded-2xl border border-slate-800 hover:border-pink-500/20 transition-all">
+                <div key={sIdx} className="flex justify-between items-center bg-white/50 backdrop-blur-md p-4 rounded-2xl border border-pink-100/50 hover:border-pink-300 shadow-sm transition-all duration-350">
                   <div className="flex items-center gap-3">
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${
-                      sIdx === 0 ? 'bg-yellow-500 text-slate-950' : sIdx === 1 ? 'bg-slate-300 text-slate-950' : 'bg-slate-850 text-slate-300'
+                      sIdx === 0 
+                        ? 'bg-amber-100 text-amber-700 border border-amber-300' 
+                        : sIdx === 1 
+                          ? 'bg-slate-100 text-slate-600 border border-slate-350' 
+                          : 'bg-pink-50 text-pink-600 border border-pink-200/50'
                     }`}>
                       {sIdx + 1}
                     </span>
                     <div>
-                      <p className="text-xs font-black text-white">{st.name}</p>
+                      <p className="text-xs font-black text-[#1E1B4B]">{st.name}</p>
                       <p className="text-[9px] font-black text-pink-500 uppercase tracking-widest">{st.rank}</p>
                     </div>
                   </div>
-                  <div className="flex gap-12 text-xs font-bold text-slate-300">
-                    <span className="text-orange-400 font-black">{st.streak} Days</span>
-                    <span className="text-white font-black">{st.xp.toLocaleString()} XP</span>
+                  <div className="flex gap-12 text-xs font-bold text-slate-600">
+                    <span className="text-orange-500 font-black">{st.streak} Days</span>
+                    <span className="text-[#1E1B4B] font-black">{st.xp.toLocaleString()} XP</span>
                   </div>
                 </div>
               ))}
@@ -516,24 +570,24 @@ const LandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             {/* Certificate Template Card */}
-            <div className="bg-slate-950 p-8 rounded-[2.5rem] border border-slate-800 text-left shadow-2xl relative overflow-hidden">
+            <div className="bg-white/70 backdrop-blur-2xl p-8 rounded-[2.5rem] border border-white/80 text-left shadow-[0_20px_50px_rgba(244,114,182,0.1)] relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl pointer-events-none" />
               <div className="flex justify-between items-start mb-10">
-                <span className="w-12 h-12 bg-pink-600/10 border border-pink-500/20 text-pink-500 rounded-2xl flex items-center justify-center font-black">
+                <span className="w-12 h-12 bg-pink-50 border border-pink-200 text-pink-600 rounded-2xl flex items-center justify-center font-black">
                   <BadgeCheck size={28} />
                 </span>
-                <span className="text-[8px] font-black text-slate-500 uppercase tracking-widest text-right">Certificate ID: SK-8842-X</span>
+                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest text-right">Certificate ID: SK-8842-X</span>
               </div>
-              <h3 className="text-lg font-black text-white leading-none">John Doe</h3>
-              <p className="text-[10px] text-pink-400 font-black uppercase tracking-widest mt-1">Full-Stack Web Development</p>
-              <div className="border-t border-slate-800/80 my-6 pt-6 flex justify-between items-end">
+              <h3 className="text-lg font-black text-[#1E1B4B] leading-none">John Doe</h3>
+              <p className="text-[10px] text-pink-600 font-black uppercase tracking-widest mt-1">Full-Stack Web Development</p>
+              <div className="border-t border-pink-100 my-6 pt-6 flex justify-between items-end">
                 <div>
-                  <p className="text-[8px] text-slate-500 font-black uppercase">Verified By</p>
-                  <p className="text-xs font-black text-white">SkillStation AI Academy</p>
+                  <p className="text-[8px] text-slate-400 font-black uppercase">Verified By</p>
+                  <p className="text-xs font-black text-[#1E1B4B]">SkilStation AI Academy</p>
                 </div>
                 <div className="w-10 h-10 bg-white p-1 rounded-lg">
                   {/* Mock QR Code representation */}
-                  <div className="w-full h-full bg-slate-950 rounded" />
+                  <div className="w-full h-full bg-gradient-to-br from-pink-500 to-fuchsia-600 rounded" />
                 </div>
               </div>
             </div>
@@ -569,7 +623,7 @@ const LandingPage = () => {
           <div className="text-center mb-20">
             <h4 className="text-pink-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4">Testimonials</h4>
             <h2 className="text-4xl md:text-5xl font-black text-[#1E1B4B] mb-6">Student Success Stories</h2>
-            <p className="text-slate-500 max-w-xl mx-auto font-medium">Hear how SkillStation helped developers land placements at global tech teams.</p>
+            <p className="text-slate-500 max-w-xl mx-auto font-medium">Hear how SkilStation helped developers land placements at global tech teams.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -682,7 +736,7 @@ const LandingPage = () => {
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500 to-violet-600 flex items-center justify-center text-white shadow-xl mx-auto mb-8">
           <Sparkles size={24} />
         </div>
-        <p className="text-slate-400 font-bold text-sm tracking-widest">© 2024 SKILLSTATION. ALL RIGHTS RESERVED.</p>
+        <p className="text-slate-400 font-bold text-sm tracking-widest">© 2024 SKILSTATION. ALL RIGHTS RESERVED.</p>
       </footer>
 
       {/* Marquee Animation CSS */}

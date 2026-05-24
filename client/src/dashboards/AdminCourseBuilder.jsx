@@ -25,6 +25,7 @@ import {
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useCategories } from '../hooks/useCategories';
 
 const VideoPlayer = ({ url, title }) => {
   if (!url) return null;
@@ -44,6 +45,7 @@ const VideoPlayer = ({ url, title }) => {
 
 const AdminCourseBuilder = () => {
   const { id } = useParams();
+  const { categories } = useCategories();
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -323,13 +325,12 @@ const AdminCourseBuilder = () => {
                     name="category" value={courseData.category} onChange={handleInputChange}
                     className="w-full bg-slate-50/50 border-2 border-slate-100 rounded-3xl p-6 text-slate-900 font-bold focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none appearance-none"
                   >
-                    <option value="Web Development">Web Development</option>
-                    <option value="AI & Machine Learning">AI & Machine Learning</option>
-                    <option value="Data Science">Data Science</option>
-                    <option value="Cloud Computing">Cloud Computing</option>
-                    <option value="Design">Design & UI/UX</option>
-                    <option value="Business">Business & Management</option>
+                    <option value="">— Select Category —</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                   </select>
+                  <p className="text-[10px] text-slate-400 font-bold px-2">Manage categories in <span className="text-violet-500">Admin → Course Builder → Manage Categories</span></p>
                 </div>
                 <div className="md:col-span-2 space-y-4">
                   <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest px-2">Course Description</label>

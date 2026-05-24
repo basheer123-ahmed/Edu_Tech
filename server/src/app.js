@@ -34,10 +34,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Rate Limiting (100 requests per 15 minutes)
+// Rate Limiting (10000 requests per 15 minutes for development and testing robustness)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 10000,
   message: 'Too many requests from this IP, please try again after 15 minutes',
 });
 app.use('/api', limiter);
@@ -52,8 +52,8 @@ app.use(hpp());
 app.use(compression());
 
 // Parsing body
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
 const path = require('path');
@@ -78,6 +78,7 @@ app.use('/api/admin', require('./routes/admin.routes'));
 app.use('/api/student', require('./routes/student.routes'));
 app.use('/api/otp', require('./routes/otp.routes'));
 app.use('/api/public', require('./routes/public.routes'));
+app.use('/api/institutions', require('./routes/institution.routes'));
 
 // Health check
 app.get('/health', (req, res) => {

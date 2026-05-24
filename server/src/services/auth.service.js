@@ -24,9 +24,24 @@ const loginUserWithEmailAndPassword = async (email, password) => {
     throw new ApiError(401, 'Incorrect email or password');
   }
 
+  // Update lastLogin timestamp
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { lastLogin: new Date() },
+  });
+
   const token = generateToken(user.id, user.role);
 
-  return { user, token };
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      mustResetPassword: user.mustResetPassword,
+    },
+    token,
+  };
 };
 
 /**

@@ -8,6 +8,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
+import AIChatWidget from './components/AIChatWidget';
+import ScrollToTop from './components/ScrollToTop';
 
 // Public Pages
 import LandingPage from './pages/LandingPage';
@@ -33,7 +35,10 @@ import Profile from './pages/Profile';
 import AdminCourseManager from './pages/AdminCourseManager';
 import StudentCourses from './pages/StudentCourses';
 import CourseDetailsPage from './pages/CourseDetailsPage';
-import AIChatWidget from './components/AIChatWidget';
+import ForceResetPassword from './pages/ForceResetPassword';
+import ManageInstitutions from './pages/admin/ManageInstitutions';
+import AccessManagement from './pages/admin/AccessManagement';
+
 
 // Placeholder Components for Missing Views
 const PlaceholderView = ({ title }) => (
@@ -53,6 +58,7 @@ import LevelWorkspacePage from './pages/student/LevelWorkspacePage';
 import StudentCourseDetails from './pages/student/StudentCourseDetails';
 import SecureWorkspacePage from './pages/student/SecureWorkspacePage';
 import StudentAnalytics from './pages/student/StudentAnalytics';
+import ResumeBuilder from './pages/student/ResumeBuilder';
 import CourseAssignments from './pages/admin/CourseAssignments';
 import ExamMonitoring from './pages/admin/ExamMonitoring';
 
@@ -78,6 +84,10 @@ const PublicLayout = () => (
       <Outlet />
     </main>
     <Footer />
+    
+    <div className="fixed bottom-3 right-5 z-[60]">
+      <AIChatWidget position="bottom" />
+    </div>
   </div>
 );
 
@@ -101,6 +111,12 @@ const AdminLayoutWrapper = () => (
   </ProtectedRoute>
 );
 
+const InstitutionLayoutWrapper = () => (
+  <ProtectedRoute role="INSTITUTION">
+    <DashboardLayout role="INSTITUTION" />
+  </ProtectedRoute>
+);
+
 import { SocketProvider } from './context/SocketContext';
 import { SidebarProvider } from './context/SidebarContext';
 
@@ -110,6 +126,7 @@ function App() {
       <SocketProvider>
         <SidebarProvider>
           <Router>
+          <ScrollToTop />
           <Toaster position="top-right" />
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>}>
             <Routes>
@@ -124,11 +141,12 @@ function App() {
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
                 <Route path="/course/:id" element={<CourseDetailsPage />} />
                 <Route path="/courses/:slug" element={<CourseDetailsPage />} />
+
                 <Route 
-                  path="/course/:id/learn" 
+                  path="/assignments/:courseId" 
                   element={
                     <ProtectedRoute role="STUDENT">
-                      <LMSPage />
+                      <CourseRoadmapPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -136,8 +154,11 @@ function App() {
 
               {/* Auth Routes with NO Footer */}
               <Route element={<AuthLayout />}>
-                <Route path="/login" element={<LoginPage />} />
+                <Route path="/login" element={<LoginPage defaultRole="STUDENT" />} />
+                <Route path="/admin/login" element={<LoginPage defaultRole="ADMIN" />} />
+                <Route path="/institution/login" element={<LoginPage defaultRole="INSTITUTION" />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/force-reset-password" element={<ForceResetPassword />} />
               </Route>
 
               {/* Student Dashboard Routes */}
@@ -147,6 +168,7 @@ function App() {
                 <Route path="courses" element={<StudentCourses />} />
                 <Route path="courses/:id" element={<StudentCourseDetails />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="resume-builder" element={<ResumeBuilder />} />
                 <Route path="analytics" element={<StudentAnalytics />} />
                 <Route path="tests" element={<PlaceholderView title="Tests" />} />
                 <Route path="assignments" element={<AssignmentsDashboard />} />
@@ -164,12 +186,46 @@ function App() {
                 <Route path="settings" element={<PlaceholderView title="Settings" />} />
               </Route>
 
-              {/* Standalone Secure Exam Route */}
+              {/* Standalone LMS Workspace Routes */}
+              <Route 
+                path="/course/:id/learn" 
+                element={
+                  <ProtectedRoute role="STUDENT">
+                    <LMSPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/learn/:courseId" 
+                element={
+                  <ProtectedRoute role="STUDENT">
+                    <LMSPage />
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* Standalone Secure Exam & Assignment Workspace Routes */}
+              <Route 
+                path="/assignments/:courseId/level/:levelId" 
+                element={
+                  <ProtectedRoute role="STUDENT">
+                    <SecureWorkspacePage isProctored={false} />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/final-exam/:courseId/:levelId" 
+                element={
+                  <ProtectedRoute role="STUDENT">
+                    <SecureWorkspacePage isProctored={true} />
+                  </ProtectedRoute>
+                } 
+              />
               <Route 
                 path="/secure-exam/:courseId/:levelId" 
                 element={
                   <ProtectedRoute role="STUDENT">
-                    <SecureWorkspacePage />
+                    <SecureWorkspacePage isProctored={true} />
                   </ProtectedRoute>
                 } 
               />
@@ -189,19 +245,18 @@ function App() {
                 <Route path="certificates" element={<PlaceholderView title="Certificates Management" />} />
                 <Route path="notifications" element={<PlaceholderView title="Notifications Hub" />} />
                 <Route path="settings" element={<PlaceholderView title="Admin Settings" />} />
+                <Route path="institutions" element={<ManageInstitutions />} />
+                <Route path="create-admin" element={<AccessManagement />} />
               </Route>
 
-              {/* Other Role Dashboards (For Future Use / Legacy) */}
-              <Route 
-                path="/institution/*" 
-                element={
-                  <ProtectedRoute role="INSTITUTION">
-                    <DashboardLayout role="INSTITUTION">
-                      <InstitutionDashboard />
-                    </DashboardLayout>
-                  </ProtectedRoute>
-                } 
-              />
+              {/* Institution Dashboard Routes */}
+              <Route path="/dashboard/institution" element={<InstitutionLayoutWrapper />}>
+                <Route index element={<Navigate to="/dashboard/institution/overview" replace />} />
+                <Route path="overview" element={<InstitutionDashboard />} />
+                <Route path="students" element={<PlaceholderView title="Manage Students" />} />
+                <Route path="courses" element={<PlaceholderView title="Manage Courses" />} />
+                <Route path="analytics" element={<PlaceholderView title="Analytics" />} />
+              </Route>
               <Route 
                 path="/company/*" 
                 element={
@@ -217,7 +272,7 @@ function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
-          <AIChatWidget />
+
         </Router>
       </SidebarProvider>
     </SocketProvider>

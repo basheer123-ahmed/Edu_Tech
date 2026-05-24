@@ -28,8 +28,9 @@ export const AuthProvider = ({ children }) => {
     setAuthHeader(token);
     try {
       const res = await axios.get('http://localhost:5000/api/auth/me');
-      setUser(res.data);
-      localStorage.setItem('user', JSON.stringify(res.data));
+      const userData = res.data;
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       console.error('Session expired or invalid');
       logout();
@@ -81,8 +82,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, refreshUser: fetchProfile }}>
+    <AuthContext.Provider value={{ user, setUser, login, register, logout, loading, refreshUser: fetchProfile }}>
       {children}
     </AuthContext.Provider>
   );
 };
+

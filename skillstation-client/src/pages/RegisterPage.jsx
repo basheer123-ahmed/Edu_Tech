@@ -43,7 +43,7 @@ const RegisterPage = () => {
           <div className="inline-flex p-3 bg-primary/10 text-primary rounded-2xl mb-4">
             <Rocket size={32} />
           </div>
-          <h1 className="text-3xl font-bold text-secondary">Join SkillStation</h1>
+          <h1 className="text-3xl font-bold text-secondary">Join SkilStation</h1>
           <p className="text-gray-500 mt-2">Start your journey towards success today</p>
         </div>
 

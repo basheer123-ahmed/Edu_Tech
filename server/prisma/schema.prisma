@@ -513,6 +513,7 @@ model user {
   avatar                               String?
   banner                               String?
   bio                                  String?                 @db.Text
+  mustResetPassword                    Boolean                 @default(false)
   location                             String?
   website                              String?
   socialLinks                          Json?

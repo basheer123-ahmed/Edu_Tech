@@ -20,15 +20,15 @@ if (hasCloudinaryKeys) {
   storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: async (req, file) => {
-      let folder = 'skillstation/others';
+      let folder = 'skilstation/others';
       let resource_type = 'auto';
 
-      if (file.mimetype.startsWith('image')) folder = 'skillstation/images';
+      if (file.mimetype.startsWith('image')) folder = 'skilstation/images';
       if (file.mimetype.startsWith('video')) {
-        folder = 'skillstation/videos';
+        folder = 'skilstation/videos';
         resource_type = 'video';
       }
-      if (file.mimetype === 'application/pdf') folder = 'skillstation/pdfs';
+      if (file.mimetype === 'application/pdf') folder = 'skilstation/pdfs';
 
       return {
         folder: folder,
